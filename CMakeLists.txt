@@ -8,18 +8,18 @@ project (mw_parallel_programming)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -Wall -ggdb -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -Wall -ggdb --std=c++0x -O3")
 
-#Boost Library includes and flags
-set(BOOST_ROOT /usr/local/boost-1.66.0)
-find_package(Boost 1.66.0 REQUIRED COMPONENTS system)
-if(Boost_FOUND)
-  include_directories(${Boost_INCLUDE_DIR})
-  link_directories(${Boost_LIBRARY_DIRS})
-endif()
+# Directories
+set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
+set(SOURCES_DIR "${PROJECT_SOURCE_DIR}/src")
+file(GLOB SOURCES "${SOURCES_DIR}/*.cpp")
 
 #MPI Library include/flags
 find_package(MPI REQUIRED)
 include_directories(${MPI_INCLUDE_PATH})
 
+# Main executable
+add_executable(main ${SOURCES})
+include_directories(${INCLUDE_DIR})
 
 #if(MPI_COMPILE_FLAGS)
 #  set_target_properties(match PROPERTIES
