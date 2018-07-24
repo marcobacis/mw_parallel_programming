@@ -20,6 +20,7 @@ include_directories(${MPI_INCLUDE_PATH})
 # Main executable
 add_executable(main ${SOURCES})
 include_directories(${INCLUDE_DIR})
+target_link_libraries(main stdc++fs)
 
 #if(MPI_COMPILE_FLAGS)
 #  set_target_properties(match PROPERTIES
