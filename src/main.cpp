@@ -11,18 +11,18 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <set>
 
 #include "gameio.h"
 #include "utils.h"
 
 
 using namespace std;
-namespace fs = std::experimental::filesystem;
 
 int main(int argc, char **argv) {
 
     if(argc < 3) {
-        cerr << "Usage: " << argv[0] << " K T game_file_path" << endl;
+        cerr << "Usage: " << argv[0] << " K T files_base_path" << endl;
         return 1;
     }
 
@@ -38,10 +38,13 @@ int main(int argc, char **argv) {
 
     vector<sensor_record> game_records;
     vector<referee_event> game_events;
+    vector<player> players;
+    set<unsigned int> balls[2];
 
     loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
     loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events);
-
+    loadPlayers(basepath / fs::path("players.csv"), players);
+    loadBalls(basepath / fs::path("balls.csv"), balls);
 
     cout << "End" << endl;
 }

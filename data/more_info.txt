@@ -1,3 +1,12 @@
+Metatadata file format: for each player
+
+name, type = (P - Player, G - goalkeeper, R - referee), team (A/B), left leg, right leg, left, arm, right arm)
+
+only the goalkeepers have arm sensors (the referee has legs sensors) 
+
+
+TIMES:
+
 1st Half:
 Start of Game: 10753295594424116
 End of Game: 12557295594424116

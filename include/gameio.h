@@ -1,7 +1,3 @@
-//
-// Created by Marco Bacis on 23/07/18.
-//
-
 #ifndef MW_PARALLEL_PROGRAMMING_IO_H
 #define MW_PARALLEL_PROGRAMMING_IO_H
 
@@ -12,32 +8,12 @@
 #include <sstream>
 #include <fstream>
 #include <vector>
+#include <cctype>
+#include <locale>
+#include <set>
 
-#define EVENT_NAME_MAXLENGTH 50 /** Maximum event name length **/
-
-/* Data Structures */
-
-/**
- * Single sensor measurement (only relevant fields for this application)
- */
-typedef struct game_t {
-    unsigned int sid;       // sensor id
-    unsigned long int ts;   // timestamp in picoseconds
-    int x;         // x position (in mm)
-    int y;         // y position (in mm)
-    int z;         // z position (in mm)
-} sensor_record;
-
-/**
- * Referral event (goal, interruption begin/end) record structure
- */
-typedef struct event_t {
-    unsigned int id;
-    char name[EVENT_NAME_MAXLENGTH];
-    unsigned long int ts;    //in picoseconds
-    unsigned int counter; //different for each unique event name
-    //char[] comment: useless
-} referee_event;
+#include "utils.h"
+#include "structs.h"
 
 /* Methods */
 
@@ -56,6 +32,8 @@ void getNextSensorRecord(std::istream& str, sensor_record &result);
  */
 void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long int base_ts = 0);
 
+player getNextPlayer(std::istream &str);
+
 /**
  * Loads the game sensors csv file into a vector of sensor records
  * @param file_path     Full game file path
@@ -72,5 +50,10 @@ void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<sens
  */
 void loadRefereeCSV(std::experimental::filesystem::path file_path, std::vector<referee_event> &events_vector,
                      unsigned long int base_ts = 0, bool append = false);
+
+
+void loadPlayers(std::experimental::filesystem::path file_path, std::vector<player> &players);
+
+void loadBalls(fs::path file_path, std::set<unsigned int> balls[]);
 
 #endif //MW_PARALLEL_PROGRAMMING_IO_H

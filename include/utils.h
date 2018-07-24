@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
+#include <experimental/filesystem>
 
 #define _DEBUG 1
 
@@ -17,6 +18,10 @@
 #else
 #define DBOUT 0 && std::cout
 #endif
+
+//! Filesystem namespace shortcut
+namespace fs = std::experimental::filesystem;
+
 
 /**
  * Prints a percentage loading bar

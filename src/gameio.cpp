@@ -1,8 +1,8 @@
-#include "utils.h"
 #include "gameio.h"
 
 #define GAME_SEP ','
 #define EVENT_SEP ';'
+#define PLAYER_SEP ','
 
 void getNextSensorRecord(std::istream &str, sensor_record &result) {
 
@@ -59,8 +59,42 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
 
 }
 
+player getNextPlayer(std::istream &str) {
+    std::string line;
+    std::getline(str, line);
 
-void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<sensor_record> &game_vector) {
+    std::stringstream lineStream(line);
+    std::string cell;
+
+    player *player_read = new player();
+
+    //player name
+    std::getline(lineStream, cell, PLAYER_SEP);
+    cell.copy(player_read->name, PLAYER_NAME_MAXLENGTH);
+
+    //! For role and team we assume no spaces in the CSV!! (to not implement trim from scratch)
+
+    //player role
+    std::getline(lineStream, cell, PLAYER_SEP);
+    player_read->role = cell[0];
+
+    //player team (empty for referee)
+    std::getline(lineStream, cell, PLAYER_SEP);
+    if(player_read->role == 'R')
+        player_read->team = (char) 0;
+    else
+        player_read->team = cell[0];
+
+    //player sensors
+    for (int i = 0; i < 4 && lineStream.rdstate() != std::ios_base::eofbit; i++) {
+        std::getline(lineStream, cell, PLAYER_SEP);
+        player_read->sensors[i] = std::stoul(cell);
+    }
+
+    return *player_read;
+}
+
+void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
 
     std::ifstream game_file;
 
@@ -94,7 +128,7 @@ void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<sens
 }
 
 
-void loadRefereeCSV(std::experimental::filesystem::path file_path, std::vector<referee_event> &events_vector,
+void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vector,
                     unsigned long int base_ts, bool append) {
     std::ifstream events_file;
 
@@ -128,4 +162,44 @@ void loadRefereeCSV(std::experimental::filesystem::path file_path, std::vector<r
     }
 
     events_file.close();
+}
+
+
+void loadPlayers(fs::path file_path, std::vector<player> &players) {
+
+    //the vector should be small, so we don't count the lines beforehand
+
+    std::ifstream players_file;
+
+    players_file.open(file_path);
+
+    if (!players_file.is_open()) {
+        throw std::runtime_error("Players file not found: " + file_path.string());
+    }
+
+    while(players_file.rdstate() != std::ios_base::eofbit) {
+        players.push_back(getNextPlayer(players_file));
+    }
+}
+
+void loadBalls(fs::path file_path, std::set<unsigned int> balls[]) {
+
+    std::ifstream balls_file;
+
+    balls_file.open(file_path);
+
+    if(!balls_file.is_open()) {
+        throw new std::runtime_error("Balls file not found: " + file_path.string());
+    }
+
+    for(int i = 0; i < 2; i++) {
+        std::string line;
+        std::getline(balls_file, line);
+        std::stringstream lineStream(line);
+        std::string ball;
+        while(lineStream.rdstate() != std::ios_base::eofbit) {
+            std::getline(lineStream, ball, ',');
+            balls[i].insert(std::stoul(ball));
+        }
+    }
 }
