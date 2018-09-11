@@ -12,6 +12,7 @@
 #include <vector>
 #include <string>
 #include <set>
+#include <map>
 
 #include "gameio.h"
 #include "utils.h"
@@ -36,15 +37,27 @@ int main(int argc, char **argv) {
         return 2;
     }
 
-    vector<sensor_record> game_records;
-    vector<referee_event> game_events;
-    vector<player> players;
-    set<unsigned int> balls[2];
+    vector<sensor_record> game_records; //! Sensor data for the entire game
+    vector<referee_event> game_events;  //! Referee events (TODO choose if one half at a time, or entire game)
+    vector<player> players;             //! Players data
+    set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
 
     loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
     loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events);
     loadPlayers(basepath / fs::path("players.csv"), players);
     loadBalls(basepath / fs::path("balls.csv"), balls);
+
+    //link each sensor to a player, in order to have a fast lookup
+    std::map<int, int> sensorPlayerIdx;
+
+    int referee_idx = 0;
+    for(int p = 0; p < players.size(); p++) {
+        int s = 0;
+        while(players[p].sensors[s] != 0) {
+            sensorPlayerIdx[s] = p;
+            if(players[p].role == 'R') referee_idx = p; //we assume just one referee
+        }
+    }
 
     cout << "End" << endl;
 }
