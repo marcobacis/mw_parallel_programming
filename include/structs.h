@@ -3,6 +3,7 @@
 
 #define EVENT_NAME_MAXLENGTH 50 /** Maximum event name length **/
 #define PLAYER_NAME_MAXLENGTH 50 /** Maximum player name length **/
+#define MAX_PLAYER_SENSORS 4
 
 /**
  * Single sensor measurement (only relevant fields for this application)
@@ -31,7 +32,7 @@ typedef struct player_t {
     char name[PLAYER_NAME_MAXLENGTH];   //Player name+surname
     char role;                          //Role -> P = Player, G = Goalkeeper, R = Referee
     char team;                          //Either A,B or "" for the referee
-    unsigned int sensors[4];            //2 sensors ids for player, 4 for the goalkeeper
+    unsigned int sensors[MAX_PLAYER_SENSORS];            //2 sensors ids for player, 4 for the goalkeeper
 } player;
 
 #endif //MW_PARALLEL_PROGRAMMING_STRUCTS_H

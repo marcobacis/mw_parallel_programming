@@ -86,7 +86,7 @@ player getNextPlayer(std::istream &str) {
         player_read->team = cell[0];
 
     //player sensors
-    for (int i = 0; i < 4 && lineStream.rdstate() != std::ios_base::eofbit; i++) {
+    for (int i = 0; i < MAX_PLAYER_SENSORS && lineStream.rdstate() != std::ios_base::eofbit; i++) {
         std::getline(lineStream, cell, PLAYER_SEP);
         player_read->sensors[i] = std::stoul(cell);
     }
@@ -99,7 +99,7 @@ void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
     std::ifstream game_file;
 
     //print loading header
-    DBOUT << "Loading game file... this will take a while" << std::endl << std::flush;
+    DBOUT << "Loading game file\n";
 
     //count lines
     game_file.open(file_path);
@@ -111,7 +111,7 @@ void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
     unsigned long int tot_records = std::count(std::istreambuf_iterator<char>(game_file),
                std::istreambuf_iterator<char>(), '\n');
 
-    DBOUT << tot_records << " total sensor records found." << std::endl << std::flush;
+    DBOUT << tot_records << " total sensor records found.\n";
 
     //read file and import records
 
@@ -125,6 +125,8 @@ void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
     }
 
     game_file.close();
+
+    DBOUT << "Sensor read completed\n";
 }
 
 
@@ -133,7 +135,7 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
     std::ifstream events_file;
 
     //print loading header
-    DBOUT << "Loading events file " << file_path << "... this will take a while" << std::endl << std::flush;
+    DBOUT << "Loading events file\n";
 
     //count lines
     events_file.open(file_path);
@@ -146,7 +148,7 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
                                  std::istreambuf_iterator<char>(), '\n');
 
 
-    DBOUT << tot_records << " total referee events found." << std::endl << std::flush;
+    DBOUT << tot_records << " total referee events found.\n";
 
     //read file and import events
 
