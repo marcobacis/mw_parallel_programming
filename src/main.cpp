@@ -71,5 +71,9 @@ int main(int argc, char **argv) {
         if(players[p].role == 'R') referee_idx = p; //we assume just one referee
     }
 
+
+    //HERE GOES ALGORITHM
+
+
     cout << "End" << endl;
 }

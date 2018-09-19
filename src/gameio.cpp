@@ -44,10 +44,21 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
     std::getline(lineStream, cell, EVENT_SEP);
     event.id = std::stoul(cell);
 
-    //event name
+    //event type
     std::getline(lineStream, cell, EVENT_SEP);
-    cell.copy(event.name, EVENT_NAME_MAXLENGTH);
 
+    //trim + tolower
+    cell.erase(remove_if(cell.begin(), cell.end(), isspace), cell.end());
+    std::transform(cell.begin(), cell.end(), cell.begin(), ::tolower);
+
+    
+    if(cell.compare("gameinterruptionbegin") == 0) {
+        event.type = INT_BEGIN;
+    } else if (cell.compare("gameinterruptionend") == 0) {
+        event.type = INT_END;
+    } else {
+        throw std::runtime_error("Event type not supported!");
+    }
 
     //event timestamp (need to parse hh:mm:ss.sss, or just hh = 0 in the first case)
     std::getline(lineStream, cell, EVENT_SEP);

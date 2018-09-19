@@ -19,9 +19,12 @@ typedef struct game_t {
 /**
  * Referral event (goal, interruption begin/end) record structure
  */
+
+enum event_type { INT_BEGIN, INT_END };
+
 typedef struct event_t {
     unsigned int id;
-    char name[EVENT_NAME_MAXLENGTH];
+    event_type type;
     unsigned long int ts;    //in picoseconds
     unsigned int counter; //different for each unique event name
     //char[] comment: useless
