@@ -1,6 +1,9 @@
 #ifndef MW_PARALLEL_PROGRAMMING_STRUCTS_H
 #define MW_PARALLEL_PROGRAMMING_STRUCTS_H
 
+#define SENSOR_FREQ 200
+#define BALL_FREQ 2000
+
 #define EVENT_NAME_MAXLENGTH 50 /** Maximum event name length **/
 #define PLAYER_NAME_MAXLENGTH 50 /** Maximum player name length **/
 #define MAX_PLAYER_SENSORS 4

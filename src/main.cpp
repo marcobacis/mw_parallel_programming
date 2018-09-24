@@ -13,10 +13,16 @@
 #include <string>
 #include <set>
 #include <map>
+#include <climits>
 
 #include "gameio.h"
 #include "utils.h"
 
+#define START_FIRST 10753295594424116
+#define END_FIRST 12557295594424116
+
+#define START_SECOND 13086639146403495
+#define END_SECOND 14879639146403495
 
 using namespace std;
 
@@ -38,7 +44,7 @@ int main(int argc, char **argv) {
     }
 
     vector<sensor_record> game_records; //! Sensor data for the entire game
-    vector<referee_event> game_events;  //! Referee events (TODO choose if one half at a time, or entire game)
+    vector<referee_event> game_events;  //! Referee events for the entire game
     vector<player> players;             //! Players data
     set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
 
@@ -52,7 +58,15 @@ int main(int argc, char **argv) {
 
         #pragma omp section
         {
-            loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events);
+            loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, START_FIRST);
+            //add interruption between games
+            game_events.push_back({2010, INT_BEGIN, END_FIRST, 35});
+            game_events.push_back({2011, INT_END, START_SECOND, 35});
+            loadRefereeCSV(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, START_SECOND, true);
+            //add end game interruption
+            game_events.push_back({6014, INT_BEGIN, END_SECOND, 39});
+            game_events.push_back({6015, INT_END, ULONG_MAX, 39});
+
             loadPlayers(basepath / fs::path("players.csv"), players);
             loadBalls(basepath / fs::path("balls.csv"), balls);
         }

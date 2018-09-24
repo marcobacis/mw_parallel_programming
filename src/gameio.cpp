@@ -17,7 +17,7 @@ void getNextSensorRecord(std::istream &str, sensor_record &result) {
 
     //ts
     std::getline(lineStream, cell, GAME_SEP);
-    result.ts = std::stoull(cell);
+    result.ts = std::stoull(cell) / SENSOR_FREQ;
 
     //x
     std::getline(lineStream, cell, GAME_SEP);
@@ -51,7 +51,7 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
     cell.erase(remove_if(cell.begin(), cell.end(), isspace), cell.end());
     std::transform(cell.begin(), cell.end(), cell.begin(), ::tolower);
 
-    
+
     if(cell.compare("gameinterruptionbegin") == 0) {
         event.type = INT_BEGIN;
     } else if (cell.compare("gameinterruptionend") == 0) {
