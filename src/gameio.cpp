@@ -160,7 +160,7 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
     std::ifstream events_file;
 
     //print loading header
-    DBOUT << "Loading events file\n";
+    //DBOUT << "Loading events file\n";
 
     //count lines
     events_file.open(file_path);
@@ -173,7 +173,7 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
                                  std::istreambuf_iterator<char>(), '\n');
 
 
-    DBOUT << tot_records << " total referee events found.\n";
+    //DBOUT << tot_records << " total referee events found.\n";
 
     //read file and import events
 

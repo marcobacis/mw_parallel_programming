@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
                 }
             }
 
-            if(mindist != std::numeric_limits<float>::infinity()) {
+            if(mindist != std::numeric_limits<float>::infinity() && mindist < K*1000) {
                 real++;
                 possession[sensorPlayerIdx[nearid]] += 0.005;
                 //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
@@ -144,21 +144,28 @@ int main(int argc, char **argv) {
 
 
     for(int pl = 0; pl < players.size(); pl++) {
+        if(pl != referee_idx) {
+            string name = players[pl].name;
+            std::replace(name.begin(), name.end(), ' ', '_');
+            name.append(".csv");
 
-        string name = players[pl].name;
-        std::replace(name.begin(), name.end(), ' ', '_');
-        name.append(".csv");
+            vector<referee_event> poss_events;
+            loadRefereeCSV(
+                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(name),
+                    poss_events, 0);
+            loadRefereeCSV(
+                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(name),
+                    poss_events, 0, true);
 
-        vector<referee_event> poss_events;
-        loadRefereeCSV(basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(name), poss_events, 0);
-        loadRefereeCSV(basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(name), poss_events, 0, true);
+            float tot_possession = 0;
+            for (int pe = 0; pe < poss_events.size(); pe += 2) {
+                float tempposs = poss_events[pe + 1].ts - poss_events[pe].ts;
+                tot_possession += tempposs > 0 ? tempposs : 0;
+            }
+            tot_possession /= 1000000000000;
 
-        unsigned long int tot_possession = 0;
-        for(int pe = 0; pe < poss_events.size(); pe += 2) {
-            tot_possession += poss_events[pe+1].ts - poss_events[pe].ts;
+            cout << players[pl].name << " real " << tot_possession << " actual " << possession[pl]
+                 << endl;
         }
-        float real_possession = tot_possession / 1000000000000;
-
-        cout << players[pl].name << " real " <<  real_possession << " actual " << possession[pl] << endl;
     }
 }
