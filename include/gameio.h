@@ -39,7 +39,7 @@ player getNextPlayer(std::istream &str);
  * @param file_path     Full game file path
  * @param game_vector   Vector to fill
  */
-void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<sensor_record> &game_vector);
+void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<std::vector<sensor_record> > &game_vector);
 
 /**
  * Loads a referee events csv file into a vector of events

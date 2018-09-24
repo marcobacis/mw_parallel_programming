@@ -1,7 +1,9 @@
 #ifndef MW_PARALLEL_PROGRAMMING_STRUCTS_H
 #define MW_PARALLEL_PROGRAMMING_STRUCTS_H
 
-#define SENSOR_FREQ 200
+#include <math.h>
+
+#define SENSOR_FREQ 5000000000 // 1 sec / 200 Hz = 1e^12 / 200 = 5e^9
 #define BALL_FREQ 2000
 
 #define EVENT_NAME_MAXLENGTH 50 /** Maximum event name length **/
@@ -23,7 +25,7 @@ typedef struct game_t {
  * Referral event (goal, interruption begin/end) record structure
  */
 
-enum event_type { INT_BEGIN, INT_END };
+enum event_type { INT_BEGIN, INT_END , OTHER_EVENT};
 
 typedef struct event_t {
     unsigned int id;
@@ -34,6 +36,11 @@ typedef struct event_t {
 } referee_event;
 
 
+typedef struct interruption_t {
+    unsigned long int start;
+    unsigned long int end;
+} interruption;
+
 typedef struct player_t {
     char name[PLAYER_NAME_MAXLENGTH];   //Player name+surname
     char role;                          //Role -> P = Player, G = Goalkeeper, R = Referee
@@ -41,4 +48,8 @@ typedef struct player_t {
     unsigned int sensors[MAX_PLAYER_SENSORS];            //2 sensors ids for player, 4 for the goalkeeper
 } player;
 
+
+inline float distance(sensor_record a, sensor_record b) {
+    return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) + (a.z-b.z)*(a.z-b.z));
+}
 #endif //MW_PARALLEL_PROGRAMMING_STRUCTS_H

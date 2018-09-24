@@ -57,7 +57,7 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
     } else if (cell.compare("gameinterruptionend") == 0) {
         event.type = INT_END;
     } else {
-        throw std::runtime_error("Event type not supported!");
+        event.type = OTHER_EVENT;
     }
 
     //event timestamp (need to parse hh:mm:ss.sss, or just hh = 0 in the first case)
@@ -105,7 +105,7 @@ player getNextPlayer(std::istream &str) {
     return *player_read;
 }
 
-void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
+void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector) {
 
     std::ifstream game_file;
 
@@ -120,7 +120,7 @@ void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
     }
 
     unsigned long int tot_records = std::count(std::istreambuf_iterator<char>(game_file),
-               std::istreambuf_iterator<char>(), '\n');
+            std::istreambuf_iterator<char>(), '\n');
 
     DBOUT << tot_records << " total sensor records found.\n";
 
@@ -131,13 +131,27 @@ void loadGameCSV(fs::path file_path, std::vector<sensor_record> &game_vector) {
     game_file.clear();
     game_file.seekg(0);
 
-    for (unsigned long int i = 0; i < tot_records; i++) {
-        getNextSensorRecord(game_file, game_vector[i]);
+    std::vector<sensor_record> game_step;
+    sensor_record temp;
+
+    getNextSensorRecord(game_file, temp);
+    game_step.push_back(temp);
+
+    for (unsigned long int i = 1; i < tot_records; i++) {
+        getNextSensorRecord(game_file, temp);
+
+        if(temp.ts != game_step[0].ts) {
+            game_vector.push_back(game_step);
+            game_step.clear();
+        }
+
+        game_step.push_back(temp);
     }
 
     game_file.close();
 
     DBOUT << "Sensor read completed\n";
+    DBOUT << game_vector.size() << " steps recorded\n";
 }
 
 
