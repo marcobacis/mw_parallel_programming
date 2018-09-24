@@ -50,31 +50,24 @@ int main(int argc, char **argv) {
     set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
     vector<interruption> interruptions;
 
-    #pragma omp parallel sections
-    {
-        #pragma omp section
-        {
-            loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
-        }
+    game_records.reserve(50000000); //we know approximately the number of records
 
-        #pragma omp section
-        {
-            game_events.push_back({2010, INT_BEGIN, 0, 0});
-            game_events.push_back({2011, INT_END, START_FIRST, 0});
-            loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, START_FIRST);
-            //add interruption between games
-            game_events.push_back({2010, INT_BEGIN, END_FIRST, 35});
-            game_events.push_back({2011, INT_END, START_SECOND, 35});
-            loadRefereeCSV(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, START_SECOND, true);
-            //add end game interruption
-            game_events.push_back({6014, INT_BEGIN, END_SECOND, 39});
-            game_events.push_back({6015, INT_END, ULONG_MAX, 39});
 
-            loadPlayers(basepath / fs::path("players.csv"), players);
-            loadBalls(basepath / fs::path("balls.csv"), balls);
-        }
+    loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
 
-    }
+    game_events.push_back({2010, INT_BEGIN, 0, 0});
+    game_events.push_back({2011, INT_END, START_FIRST, 0});
+    loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, START_FIRST);
+    //add interruption between games
+    game_events.push_back({2010, INT_BEGIN, END_FIRST, 35});
+    game_events.push_back({2011, INT_END, START_SECOND, 35});
+    loadRefereeCSV(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, START_SECOND);
+    //add end game interruption
+    game_events.push_back({6014, INT_BEGIN, END_SECOND, 39});
+    game_events.push_back({6015, INT_END, ULONG_MAX, 39});
+
+    loadPlayers(basepath / fs::path("players.csv"), players);
+    loadBalls(basepath / fs::path("balls.csv"), balls);
 
     //link each sensor to a player, in order to have a fast lookup
     std::map<int, int> sensorPlayerIdx;
@@ -105,12 +98,12 @@ int main(int argc, char **argv) {
         //check if interrupted
         bool interrupted = false;
         for(interruption inter : interruptions) {
-            interrupted &= (step[0].ts > inter.start && step[0].ts < inter.end);
+            interrupted &= (step[0].ts >= inter.start && step[0].ts <= inter.end);
         }
 
 
         if(!interrupted) {
-            //get ball position
+            //get ball position (the first it finds....wrong but a first attempt)
             sensor_record ball;
             for(sensor_record rec : step) {
                 if(balls->find(rec.sid) != balls->end()) {
@@ -155,7 +148,7 @@ int main(int argc, char **argv) {
                     poss_events, 0);
             loadRefereeCSV(
                     basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(name),
-                    poss_events, 0, true);
+                    poss_events, 0);
 
             float tot_possession = 0;
             for (int pe = 0; pe < poss_events.size(); pe += 2) {

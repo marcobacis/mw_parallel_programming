@@ -22,7 +22,7 @@
  * @param str       Input sensor records stream (usually from a file)
  * @param result    Reference where to set the read parameters
  */
-void getNextSensorRecord(std::istream& str, sensor_record &result);
+bool getNextSensorRecord(std::istream& str, sensor_record &result);
 
 /**
  * Grabs the next available event record from a input stream and store it in the given result reference
@@ -32,6 +32,11 @@ void getNextSensorRecord(std::istream& str, sensor_record &result);
  */
 void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long int base_ts = 0);
 
+/**
+ * Grabs the next available player record from the input stream
+ * @param str
+ * @return the new player got from the stream
+ */
 player getNextPlayer(std::istream &str);
 
 /**
@@ -49,11 +54,22 @@ void loadGameCSV(std::experimental::filesystem::path file_path, std::vector<std:
  * @param append        Whether to append the read events or not to the vector
  */
 void loadRefereeCSV(std::experimental::filesystem::path file_path, std::vector<referee_event> &events_vector,
-                     unsigned long int base_ts = 0, bool append = false);
+                     unsigned long int base_ts = 0);
 
 
+/**
+ * Loads the players from the given file
+ * @param file_path The players' file path
+ * @param players  The vector in which to store the players
+ */
 void loadPlayers(std::experimental::filesystem::path file_path, std::vector<player> &players);
 
+
+/**
+ * Loads the balls in the sets (one set for each half)
+ * @param file_path Balls' file path
+ * @param balls the loaded balls
+ */
 void loadBalls(fs::path file_path, std::set<unsigned int> balls[]);
 
 #endif //MW_PARALLEL_PROGRAMMING_IO_H

@@ -3,7 +3,7 @@
 
 #include <math.h>
 
-#define SENSOR_FREQ 2000000000 // 1 sec / 200 Hz = 1e^12 / 200 = 5e^9
+#define SENSOR_FREQ 5000000000 // 1 sec / 200 Hz = 1e^12 / 200 = 5e^9
 #define BALL_FREQ 500000000 // 2kHz
 
 #define EVENT_NAME_MAXLENGTH 50 /** Maximum event name length **/

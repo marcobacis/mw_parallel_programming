@@ -4,15 +4,20 @@
 #define EVENT_SEP ';'
 #define PLAYER_SEP ','
 
-void getNextSensorRecord(std::istream &str, sensor_record &result) {
+bool getNextSensorRecord(std::istream &str, sensor_record &result) {
 
     std::string line;
     std::getline(str, line);
 
+    if(str.eof() || str.bad()) return false;
+
     std::stringstream lineStream(line);
+
     std::string cell;
     //sid
     std::getline(lineStream, cell, GAME_SEP);
+    if(lineStream.eof() || lineStream.bad()) return false;
+
     result.sid = std::stoul(cell);
 
     //ts
@@ -30,6 +35,8 @@ void getNextSensorRecord(std::istream &str, sensor_record &result) {
     //z
     std::getline(lineStream, cell, GAME_SEP);
     result.z = std::stoi(cell);
+
+    return true;
 }
 
 
@@ -38,6 +45,7 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
     std::getline(str, line);
 
     std::stringstream lineStream(line);
+
     std::string cell;
 
     //event id
@@ -119,15 +127,6 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
         throw std::runtime_error("Game file not found: " + file_path.string());
     }
 
-    unsigned long int tot_records = std::count(std::istreambuf_iterator<char>(game_file),
-            std::istreambuf_iterator<char>(), '\n');
-
-    DBOUT << tot_records << " total sensor records found.\n";
-
-    //read file and import records
-
-    game_vector.reserve(tot_records);
-
     game_file.clear();
     game_file.seekg(0);
 
@@ -137,8 +136,7 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
     getNextSensorRecord(game_file, temp);
     game_step.push_back(temp);
 
-    for (unsigned long int i = 1; i < tot_records; i++) {
-        getNextSensorRecord(game_file, temp);
+    while(!game_file.eof() && getNextSensorRecord(game_file, temp)) {
 
         if(temp.ts != game_step[0].ts) {
             game_vector.push_back(game_step);
@@ -156,11 +154,8 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
 
 
 void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vector,
-                    unsigned long int base_ts, bool append) {
+                    unsigned long int base_ts) {
     std::ifstream events_file;
-
-    //print loading header
-    //DBOUT << "Loading events file\n";
 
     //count lines
     events_file.open(file_path);
@@ -170,22 +165,21 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
     }
 
     unsigned long int tot_records = std::count(std::istreambuf_iterator<char>(events_file),
-                                 std::istreambuf_iterator<char>(), '\n');
+                                               std::istreambuf_iterator<char>(), '\n');
 
 
     //DBOUT << tot_records << " total referee events found.\n";
 
     //read file and import events
 
-    int baseidx = append == true ? events_vector.size() : 0;
-
-    events_vector.resize(baseidx + tot_records);
 
     events_file.clear();
     events_file.seekg(0);
 
     for (unsigned long int i = 0; i < tot_records; i++) {
-        getNextRefereeEvent(events_file, events_vector[baseidx + i], base_ts);
+        referee_event tmp;
+        getNextRefereeEvent(events_file, tmp, base_ts);
+        events_vector.push_back(tmp);
     }
 
     events_file.close();
