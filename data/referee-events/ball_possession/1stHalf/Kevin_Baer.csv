@@ -1,4 +1,3 @@
-event_id;event_name;event_time_real;event_counter;comment
 6014;Kevin Baer Begin;00:00:20.488;1;empty
 6015;Kevin Baer End;00:00:21.607;1;empty
 6014;Kevin Baer Begin;00:00:59.454;2;empty
@@ -51,26 +50,3 @@ event_id;event_name;event_time_real;event_counter;comment
 6015;Kevin Baer End;00:28:53.071;25;empty
 6014;Kevin Baer Begin;00:29:22.110;26;empty
 6015;Kevin Baer End;00:29:22.110;26;empty
-
-
-
-Statistic:;
-Type:;Count:;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-Kevin Baer End;26;
-Kevin Baer Begin;26;

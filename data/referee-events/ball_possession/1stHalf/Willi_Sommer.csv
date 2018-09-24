@@ -1,4 +1,3 @@
-event_id;event_name;event_time_real;event_counter;comment
 6014;Willi Sommer Begin;00:01:23.078;1;empty
 6015;Willi Sommer End;00:01:24.099;1;empty
 6014;Willi Sommer Begin;00:01:36.064;2;empty
@@ -109,26 +108,3 @@ event_id;event_name;event_time_real;event_counter;comment
 6015;Willi Sommer End;00:29:45.167;54;empty
 6014;Willi Sommer Begin;00:29:51.298;55;empty
 6015;Willi Sommer End;00:29:55.007;55;empty
-
-
-
-Statistic:;
-Type:;Count:;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-New Event;0;
-Willi Sommer End;55;
-;0;
-Willi Sommer Begin;55;

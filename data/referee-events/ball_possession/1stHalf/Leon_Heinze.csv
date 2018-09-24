@@ -1,4 +1,3 @@
-event_id;event_name;event_time_real;event_counter;comment
 6014;Leon Heinze Begin;00:00:03.205;1;empty
 6015;Leon Heinze End;00:00:03.205;1;empty
 6014;Leon Heinze Begin;00:04:42.546;2;empty
@@ -29,26 +28,3 @@ event_id;event_name;event_time_real;event_counter;comment
 6015;Leon Heinze End;00:26:46.271;14;empty
 6014;Leon Heinze Begin;00:28:33.085;15;empty
 6015;Leon Heinze End;00:28:33.085;15;empty
-
-
-
-Statistic:;
-Type:;Count:;
-New Event;0;
-New Event;0;
-New Event;0;
-;0;
-;0;
-;0;
-;0;
-Leon Heinze End;15;
-;0;
-Leon Heinze Begin;15;
-New Event;0;
-New Event;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-New Event;0;

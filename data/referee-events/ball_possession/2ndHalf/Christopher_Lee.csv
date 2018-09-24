@@ -1,4 +1,3 @@
-event_id;event_name;event_time_real;event_counter;comment
 6014;Christopher Lee Begin;00:00:19.502;1;empty
 6015;Christopher Lee End;00:00:20.597;1;empty
 6014;Christopher Lee Begin;00:03:01.317;2;empty
@@ -49,26 +48,3 @@ event_id;event_name;event_time_real;event_counter;comment
 6015;Christopher Lee End;00:25:29.853;24;empty
 6014;Christopher Lee Begin;00:29:30.824;25;empty
 6015;Christopher Lee End;00:29:30.824;25;empty
-;;;;
-;;;;
-;;;;
-Statistic:;;;;
-Type:;Count:;;;
-New Event;0;;;
-New Event;0;;;
-New Event;0;;;
-New Event;0;;;
-New Event;0;;;
-Niklas Welzlein End;25;;;
-Niklas Welzlein Begin;25;;;
-;0;;;
-;0;;;
-;0;;;
-;0;;;
-;0;;;
-;0;;;
-;0;;;
-New Event;0;;;
-;0;;;
-;0;;;
-;0;;;

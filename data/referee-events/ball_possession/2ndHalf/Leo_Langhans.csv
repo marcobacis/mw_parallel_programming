@@ -1,4 +1,3 @@
-event_id;event_name;event_time_real;event_counter;comment
 6014;Leo Langhans Begin;00:03:48.955;1;empty
 6015;Leo Langhans End;00:04:00.548;1;empty
 6014;Leo Langhans Begin;00:04:05.015;2;empty
@@ -49,26 +48,3 @@ event_id;event_name;event_time_real;event_counter;comment
 6015;Leo Langhans End;00:28:46.438;24;empty
 6014;Leo Langhans Begin;00:29:16.712;25;empty
 6015;Leo Langhans End;00:29:18.762;25;empty
-
-
-
-Statistic:;
-Type:;Count:;
-;0;
-;0;
-;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-New Event;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-;0;
-Leo Langhans Begin;25;
-Leo Langhans End;25;
