@@ -52,7 +52,6 @@ int main(int argc, char **argv) {
 
     game_records.reserve(50000000); //we know approximately the number of records
 
-
     loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
 
     game_events.push_back({2010, INT_BEGIN, 0, 0});
@@ -133,9 +132,8 @@ int main(int argc, char **argv) {
         }
     }
 
-    cout << "End" << endl;
-
-
+    float total_possession = 0;
+    float total_actual = 0;
     for(int pl = 0; pl < players.size(); pl++) {
         if(pl != referee_idx) {
             string name = players[pl].name;
@@ -150,15 +148,36 @@ int main(int argc, char **argv) {
                     basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(name),
                     poss_events, 0);
 
-            float tot_possession = 0;
+            float player_possession = 0;
             for (int pe = 0; pe < poss_events.size(); pe += 2) {
                 float tempposs = poss_events[pe + 1].ts - poss_events[pe].ts;
-                tot_possession += tempposs > 0 ? tempposs : 0;
+                player_possession += tempposs > 0 ? tempposs : 0;
             }
-            tot_possession /= 1000000000000;
+            player_possession /= 1000000000000;
+            total_possession += player_possession;
+            total_actual += possession[pl];
 
-            cout << players[pl].name << " real " << tot_possession << " actual " << possession[pl]
+            cout << players[pl].name << " real " << player_possession << " actual " << possession[pl]
                  << endl;
         }
     }
+
+    float tot = 0;
+    for(int e = 1; e < game_events.size()-2;e += 2) {
+        tot += (game_events[e+1].ts - game_events[e].ts);
+    }
+    tot /= 1000000000000;
+
+    float interr = 0;
+    for(int e = 2; e < game_events.size()-2;e += 2) {
+        interr += (game_events[e+1].ts - game_events[e].ts);
+    }
+    interr /= 1000000000000;
+
+    float tot_time = (END_SECOND - START_FIRST) / 1000000000000;
+
+    DBOUT << "\n" <<  "Effective game time " << tot << "\n";
+    DBOUT << "Possession real: " << total_possession << " actual " << total_actual << "\n";
+    DBOUT << "Interruptions " << interr << "\n";
+    DBOUT << "Total time (included interruptions) " << tot_time << " seconds\n";
 }
