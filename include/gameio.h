@@ -18,26 +18,26 @@
 /* Methods */
 
 /**
- * Grabs the next available sensor record from a input stream and store it in the given result reference
- * @param str       Input sensor records stream (usually from a file)
- * @param result    Reference where to set the read parameters
+ * Parses and return a sensor record from a string
+ * @param line      Input sensor record line
+ * @return          the parsed sensor record
  */
-bool getNextSensorRecord(std::istream& str, sensor_record &result);
+sensor_record parseSensorRecord(std::string line);
 
 /**
- * Grabs the next available event record from a input stream and store it in the given result reference
- * @param str       Input event records stream (usually from a file)
- * @param result    Reference where to set the read parameters
+ * Parses and return a event record from a string
+ * @param line      Input event record line
  * @param base_ts   Base timestamp from which to start (used when reading 2nd half of the match)
+ * @return          the parsed event
  */
-void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long int base_ts = 0);
+referee_event parseRefereeEvent(std::string line, unsigned long int base_ts);
 
 /**
- * Grabs the next available player record from the input stream
- * @param str
- * @return the new player got from the stream
+ * Parses and return a player record from a string
+ * @param line      Player record string
+ * @return          the parsed player record
  */
-player getNextPlayer(std::istream &str);
+player parsePlayer(std::string line);
 
 /**
  * Loads the game sensors csv file into a vector of sensor records

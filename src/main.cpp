@@ -148,16 +148,16 @@ int main(int argc, char **argv) {
     float total_actual = 0;
     for(int pl = 0; pl < players.size(); pl++) {
         if(pl != referee_idx) {
-            string name = players[pl].name;
-            std::replace(name.begin(), name.end(), ' ', '_');
-            name.append(".csv");
+            string filename = players[pl].name;
+            std::replace(filename.begin(), filename.end(), ' ', '_');
+            filename.append(".csv");
 
             vector<referee_event> poss_events;
             loadRefereeCSV(
-                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(name),
+                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(filename),
                     poss_events, 0);
             loadRefereeCSV(
-                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(name),
+                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
                     poss_events, 0);
 
             float player_possession = 0;
@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
             total_possession += player_possession;
             total_actual += possession[pl];
 
-            cout << players[pl].name << " real " << player_possession << " actual " << possession[pl]
+            cout << players[pl].name << " expected " << player_possession << ", got " << possession[pl]
                  << endl;
         }
     }
@@ -187,10 +187,10 @@ int main(int argc, char **argv) {
 
     float tot_time = (END_SECOND - START_FIRST) / 1000000000000;
 
-    DBOUT << "\n" <<  "Effective game time " << tot << "\n";
+    DBOUT << "\n";
+    DBOUT << "Effective game time " << tot << "\n";
     DBOUT << "Possession real: " << total_possession << " actual " << total_actual << "\n";
     DBOUT << "Interruptions " << interr << "\n";
     DBOUT << "Total time (included interruptions) " << tot_time << " seconds\n";
-
-    DBOUT << "Total player records " << tot_rec << ", total ball records " << tot_ball << "\n";
+    DBOUT << "Total player records " << tot_rec << ", total ball records " << tot_ball << "\n\n";
 }

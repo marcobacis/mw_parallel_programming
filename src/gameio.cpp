@@ -4,19 +4,13 @@
 #define EVENT_SEP ';'
 #define PLAYER_SEP ','
 
-bool getNextSensorRecord(std::istream &str, sensor_record &result) {
+sensor_record parseSensorRecord(std::string line) {
 
-    std::string line;
-    std::getline(str, line);
-
-    if(str.eof() || str.bad()) return false;
-
+    sensor_record result;
     std::stringstream lineStream(line);
-
     std::string cell;
     //sid
     std::getline(lineStream, cell, GAME_SEP);
-    if(lineStream.eof() || lineStream.bad()) return false;
 
     result.sid = std::stoul(cell);
 
@@ -36,17 +30,17 @@ bool getNextSensorRecord(std::istream &str, sensor_record &result) {
     std::getline(lineStream, cell, GAME_SEP);
     result.z = std::stoi(cell);
 
-    return true;
+    return result;
 }
 
 
-void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long int base_ts) {
-    std::string line;
-    std::getline(str, line);
+referee_event parseRefereeEvent(std::string line, unsigned long int base_ts) {
 
     std::stringstream lineStream(line);
 
     std::string cell;
+
+    referee_event  event;
 
     //event id
     std::getline(lineStream, cell, EVENT_SEP);
@@ -76,51 +70,48 @@ void getNextRefereeEvent(std::istream &str, referee_event &event, unsigned long 
     std::getline(lineStream, cell, EVENT_SEP);
     event.counter = std::stoul(cell);
 
+    return event;
 }
 
-player getNextPlayer(std::istream &str) {
-    std::string line;
-    std::getline(str, line);
+player parsePlayer(std::string line) {
 
     std::stringstream lineStream(line);
     std::string cell;
 
-    player *player_read = new player();
+    player player_read;
 
     //player name
     std::getline(lineStream, cell, PLAYER_SEP);
-    cell.copy(player_read->name, PLAYER_NAME_MAXLENGTH);
+    cell.copy(player_read.name, PLAYER_NAME_MAXLENGTH);
+    player_read.name[cell.length()] = '\0';
 
-    //! For role and team we assume no spaces in the CSV!! (to not implement trim from scratch)
+    //! For role and team we assume no spaces in the CSV
 
     //player role
     std::getline(lineStream, cell, PLAYER_SEP);
-    player_read->role = cell[0];
+    player_read.role = cell[0];
 
     //player team (empty for referee)
     std::getline(lineStream, cell, PLAYER_SEP);
-    if(player_read->role == 'R')
-        player_read->team = (char) 0;
+    if(player_read.role == 'R')
+        player_read.team = (char) 0;
     else
-        player_read->team = cell[0];
+        player_read.team = cell[0];
 
     //player sensors
-    for (int i = 0; i < MAX_PLAYER_SENSORS && lineStream.rdstate() != std::ios_base::eofbit; i++) {
-        std::getline(lineStream, cell, PLAYER_SEP);
-        player_read->sensors[i] = std::stoul(cell);
+    for (int i = 0; i < MAX_PLAYER_SENSORS && std::getline(lineStream, cell, PLAYER_SEP); i++) {
+        player_read.sensors[i] = std::stoul(cell);
     }
 
-    return *player_read;
+    return player_read;
 }
 
 void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector) {
 
     std::ifstream game_file;
 
-    //print loading header
     DBOUT << "Loading game file\n";
 
-    //count lines
     game_file.open(file_path);
 
     if (!game_file.is_open()) {
@@ -131,12 +122,15 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
     game_file.seekg(0);
 
     std::vector<sensor_record> game_step;
-    sensor_record temp;
+    std::string line;
 
-    getNextSensorRecord(game_file, temp);
+    std::getline(game_file, line);
+    sensor_record temp = parseSensorRecord(line);
     game_step.push_back(temp);
 
-    while(!game_file.eof() && getNextSensorRecord(game_file, temp)) {
+    while(std::getline(game_file, line)) {
+
+        temp = parseSensorRecord(line);
 
         if(temp.ts != game_step[0].ts) {
             game_vector.push_back(game_step);
@@ -157,29 +151,16 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
                     unsigned long int base_ts) {
     std::ifstream events_file;
 
-    //count lines
     events_file.open(file_path);
 
     if (!events_file.is_open()) {
         throw std::runtime_error("Events file not found: " + file_path.string());
     }
 
-    unsigned long int tot_records = std::count(std::istreambuf_iterator<char>(events_file),
-                                               std::istreambuf_iterator<char>(), '\n');
+    std::string line;
 
-
-    //DBOUT << tot_records << " total referee events found.\n";
-
-    //read file and import events
-
-
-    events_file.clear();
-    events_file.seekg(0);
-
-    for (unsigned long int i = 0; i < tot_records; i++) {
-        referee_event tmp;
-        getNextRefereeEvent(events_file, tmp, base_ts);
-        events_vector.push_back(tmp);
+    while(std::getline(events_file, line)) {
+        events_vector.push_back(parseRefereeEvent(line, base_ts));
     }
 
     events_file.close();
@@ -187,8 +168,6 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
 
 
 void loadPlayers(fs::path file_path, std::vector<player> &players) {
-
-    //the vector should be small, so we don't count the lines beforehand
 
     std::ifstream players_file;
 
@@ -198,8 +177,10 @@ void loadPlayers(fs::path file_path, std::vector<player> &players) {
         throw std::runtime_error("Players file not found: " + file_path.string());
     }
 
-    while(players_file.rdstate() != std::ios_base::eofbit) {
-        players.push_back(getNextPlayer(players_file));
+    std::string line;
+
+    while(std::getline(players_file, line)) {
+        players.push_back(parsePlayer(line));
     }
 }
 
