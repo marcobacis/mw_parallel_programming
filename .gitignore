@@ -32,5 +32,6 @@
 *.app
 .idea
 build
-data
 *.sublime-*
+full-game.csv
+*.mov
