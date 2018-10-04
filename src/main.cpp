@@ -27,7 +27,9 @@
 #define START_SECOND  13086639146403495
 #define END_SECOND    14879639146403495
 
+
 using namespace std;
+
 
 int main(int argc, char **argv)
 {
@@ -45,7 +47,7 @@ int main(int argc, char **argv)
         cerr << "K must be between 1 and 5" << endl << "T must be between 1 and 60" << endl;
         return 2;
     }
-
+    
     vector<vector<sensor_record> > game_records; //! Sensor data for the entire game
     vector<referee_event> game_events;  //! Referee events for the entire game
     vector<player> players;             //! Players data
@@ -118,7 +120,7 @@ int main(int argc, char **argv)
                     step_balls.push_back(rec);
                 }
             }
-
+            
             tot_rec += step.size() - step_balls.size();
             tot_ball += step_balls.size();
 

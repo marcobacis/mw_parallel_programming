@@ -81,9 +81,7 @@ player parsePlayer(std::string line) {
     player player_read;
 
     //player name
-    std::getline(lineStream, cell, PLAYER_SEP);
-    cell.copy(player_read.name, PLAYER_NAME_MAXLENGTH);
-    player_read.name[cell.length()] = '\0';
+    std::getline(lineStream, player_read.name, PLAYER_SEP);
 
     //! For role and team we assume no spaces in the CSV
 

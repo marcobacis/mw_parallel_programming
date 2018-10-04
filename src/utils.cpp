@@ -1,10 +1,11 @@
 /*
- * Utilitity methods
+ * Utility methods
  */
 
 #include "utils.h"
 
-void printLoadPerc(unsigned long int count, unsigned long int total, bool ret) {
+void printLoadPerc(unsigned long int count, unsigned long int total, bool ret)
+{
     unsigned int perc = count * 100 / total;
 
     DBOUT << "[";
@@ -24,7 +25,8 @@ void printLoadPerc(unsigned long int count, unsigned long int total, bool ret) {
 }
 
 
-unsigned long int parse_datetime(std::string str) {
+unsigned long int parse_datetime(std::string str)
+{
     std::string field;
     std::stringstream dateStream(str);
 
