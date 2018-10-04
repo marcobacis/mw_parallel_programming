@@ -29,8 +29,8 @@
 
 using namespace std;
 
-int main(int argc, char **argv) {
-
+int main(int argc, char **argv)
+{
     if(argc < 3) {
         cerr << "Usage: " << argv[0] << " K T files_base_path" << endl;
         return 1;
@@ -97,7 +97,11 @@ int main(int argc, char **argv) {
     int tot_rec = 0;
 
     int real = 0;
-    for(vector<sensor_record> step : game_records) {
+
+    int nrecords = game_records.size();
+    #pragma omp parallel for reduction(+:tot_ball, tot_rec, real)
+    for (int i=0; i<nrecords; i++) {
+        vector<sensor_record>& step = game_records[i];
 
         //check if interrupted
         bool interrupted = false;
@@ -137,7 +141,9 @@ int main(int argc, char **argv) {
 
                 if (mindist != std::numeric_limits<float>::infinity() && mindist < K * 1000) {
                     real++;
-                    possession[sensorPlayerIdx[nearid]] += toAdd;
+                    float& this_possession = possession[sensorPlayerIdx[nearid]];
+                    #pragma omp atomic
+                    this_possession += toAdd;
                     //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
                 }
             }
