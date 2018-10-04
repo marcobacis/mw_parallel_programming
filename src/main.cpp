@@ -36,8 +36,8 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    float K = stof(argv[1]);
-    float T = stof(argv[2]);
+    double K = stof(argv[1]);
+    double T = stof(argv[2]);
 
     fs::path basepath(argv[3]);
 
@@ -71,12 +71,12 @@ int main(int argc, char **argv)
     loadBalls(basepath / fs::path("balls.csv"), balls);
 
     //link each sensor to a player, in order to have a fast lookup
-    std::map<int, int> sensorPlayerIdx;
-    vector<float> possession(players.size());
+    std::map<unsigned int, unsigned int> sensorPlayerIdx;
+    vector<double> possession(players.size());
 
-    int referee_idx = 0;
-    for(int p = 0; p < players.size(); p++) {
-        for(int s : players[p].sensors) {
+    unsigned int referee_idx = 0;
+    for(unsigned int p = 0; p < players.size(); p++) {
+        for(unsigned int s : players[p].sensors) {
             if(s != 0)
                 sensorPlayerIdx[s] = p;
         }
@@ -86,7 +86,7 @@ int main(int argc, char **argv)
     }
 
     //map interruptions, assuming they are in order start-end-start-end...
-    for(int in = 0; in < game_events.size(); in += 2) {
+    for (unsigned int in = 0; in < game_events.size(); in += 2) {
         interruptions.push_back({game_events[in].ts / SENSOR_FREQ, game_events[in+1].ts / SENSOR_FREQ});
     }
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
             tot_rec += step.size() - step_balls.size();
             tot_ball += step_balls.size();
 
-            float toAdd = 0.005 / step_balls.size();
+            double toAdd = 0.005 / step_balls.size();
 
             for(sensor_record ball : step_balls) {
                 //get nearest sensor
@@ -139,9 +139,9 @@ int main(int argc, char **argv)
                     }
                 }
 
-                if (mindist != std::numeric_limits<float>::infinity() && mindist < K * 1000) {
+                if (mindist != std::numeric_limits<double>::infinity() && mindist < K * 1000) {
                     real++;
-                    float& this_possession = possession[sensorPlayerIdx[nearid]];
+                    double& this_possession = possession[sensorPlayerIdx[nearid]];
                     #pragma omp atomic
                     this_possession += toAdd;
                     //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
@@ -150,9 +150,9 @@ int main(int argc, char **argv)
         }
     }
 
-    float total_possession = 0;
-    float total_actual = 0;
-    for(int pl = 0; pl < players.size(); pl++) {
+    double total_possession = 0;
+    double total_actual = 0;
+    for(unsigned int pl = 0; pl < players.size(); pl++) {
         if(pl != referee_idx) {
             string filename = players[pl].name;
             std::replace(filename.begin(), filename.end(), ' ', '_');
@@ -166,8 +166,8 @@ int main(int argc, char **argv)
                     basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
                     poss_events, 0);
 
-            float player_possession = 0;
-            for (int pe = 0; pe < poss_events.size(); pe += 2) {
+            double player_possession = 0;
+            for (unsigned int pe = 0; pe < poss_events.size(); pe += 2) {
                 player_possession += poss_events[pe + 1].ts - poss_events[pe].ts;
             }
             player_possession /= 1000000000000;
@@ -180,13 +180,13 @@ int main(int argc, char **argv)
     }
 
     float tot = 0;
-    for(int e = 1; e < game_events.size()-2;e += 2) {
+    for(unsigned int e = 1; e < game_events.size()-2;e += 2) {
         tot += (game_events[e+1].ts - game_events[e].ts);
     }
     tot /= 1000000000000;
 
     float interr = 0;
-    for(int e = 2; e < game_events.size()-2;e += 2) {
+    for(unsigned int e = 2; e < game_events.size()-2;e += 2) {
         interr += game_events[e+1].ts - game_events[e].ts;
     }
     interr /= 1000000000000;

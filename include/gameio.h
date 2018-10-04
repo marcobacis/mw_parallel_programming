@@ -15,7 +15,6 @@
 #include "utils.h"
 #include "structs.h"
 
-/* Methods */
 
 /**
  * Parses and return a sensor record from a string
