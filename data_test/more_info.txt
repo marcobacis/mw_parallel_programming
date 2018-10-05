@@ -1,0 +1,21 @@
+Metatadata file format: for each player
+
+name, type = (P - Player, G - goalkeeper, R - referee), team (A/B), left leg, right leg, left, arm, right arm)
+
+only the goalkeepers have arm sensors (the referee has legs sensors) 
+
+
+TIMES:
+
+1st Half:
+Start of Game: 10753295594424116
+End of Game: 12557295594424116
+Without Ball: 12398************
+
+2nd Half:
+Start of Game: 13086639146403495
+End of Game: 14879639146403495
+
+Towards the end of the 1st half we had technical issues with the locating system so that the last 2.5 minutes are without the active ball transmitter (see without ball above). Hence, the shot on goal and ball possession query cannot produce valuable information for that
+time.
+
