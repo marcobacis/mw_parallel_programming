@@ -8,12 +8,15 @@
 
 #define MAX_PLAYER_SENSORS 4
 
+
+typedef unsigned long int sensor_timestamp_t;
+
 /**
  * Single sensor measurement (only relevant fields for this application)
  */
 struct sensor_record {
     unsigned int sid;       // sensor id
-    unsigned long int ts;   // timestamp in picoseconds
+    sensor_timestamp_t ts;   // timestamp in picoseconds
     int x;         // x position (in mm)
     int y;         // y position (in mm)
     int z;         // z position (in mm)
@@ -32,14 +35,14 @@ enum event_type {
 struct referee_event {
     unsigned int id;
     event_type type;
-    unsigned long int ts;    //in picoseconds
+    sensor_timestamp_t ts;    //in picoseconds
     unsigned int counter; //different for each unique event name
 };
 
 
 struct interruption {
-    unsigned long int start;
-    unsigned long int end;
+    sensor_timestamp_t start;
+    sensor_timestamp_t end;
 };
 
 struct player {

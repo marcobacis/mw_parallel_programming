@@ -16,16 +16,9 @@
 #include <map>
 #include <limits>
 #include <climits>
-
-#include "gameio.h"
 #include "utils.h"
-
-#define START_FIRST   10753295594424116
-#define END_FIRST     12557295594424116
-#define NO_BALL_START 12398000000000000
-
-#define START_SECOND  13086639146403495
-#define END_SECOND    14879639146403495
+#include "game.h"
+#include "gameio.h"
 
 
 using namespace std;
@@ -47,50 +40,11 @@ int main(int argc, char **argv)
         cerr << "K must be between 1 and 5" << endl << "T must be between 1 and 60" << endl;
         return 2;
     }
+
+    game g;
+    g.load_from_directory(basepath);
     
-    vector<vector<sensor_record> > game_records; //! Sensor data for the entire game
-    vector<referee_event> game_events;  //! Referee events for the entire game
-    vector<player> players;             //! Players data
-    set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
-    vector<interruption> interruptions;
-
-    game_records.reserve(50000000); //we know approximately the number of records
-
-    loadGameCSV(basepath / fs::path("full-game.csv"), game_records);
-
-    game_events.push_back({2010, INT_BEGIN, 0, 0});
-    game_events.push_back({2011, INT_END, START_FIRST, 0});
-    loadRefereeCSV(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, START_FIRST);
-    //add interruption between games + no ball time
-    game_events.push_back({2010, INT_BEGIN, NO_BALL_START, 35});
-    game_events.push_back({2011, INT_END, START_SECOND, 35});
-    loadRefereeCSV(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, START_SECOND);
-    //add end game interruption
-    game_events.push_back({6014, INT_BEGIN, END_SECOND, 39});
-    game_events.push_back({6015, INT_END, ULONG_MAX, 39});
-
-    loadPlayers(basepath / fs::path("players.csv"), players);
-    loadBalls(basepath / fs::path("balls.csv"), balls);
-
-    //link each sensor to a player, in order to have a fast lookup
-    std::map<unsigned int, unsigned int> sensorPlayerIdx;
-    vector<double> possession(players.size());
-
-    unsigned int referee_idx = 0;
-    for(unsigned int p = 0; p < players.size(); p++) {
-        for(unsigned int s : players[p].sensors) {
-            if(s != 0)
-                sensorPlayerIdx[s] = p;
-        }
-        if(players[p].role == 'R') referee_idx = p; //we assume just one referee
-
-        possession[p] = 0;
-    }
-
-    //map interruptions, assuming they are in order start-end-start-end...
-    for (unsigned int in = 0; in < game_events.size(); in += 2) {
-        interruptions.push_back({game_events[in].ts / SENSOR_FREQ, game_events[in+1].ts / SENSOR_FREQ});
-    }
+    vector<double> possession(g.players.size(), 0);
 
     //HERE GOES ALGORITHM
     //bruteforce algorithm
@@ -100,23 +54,19 @@ int main(int argc, char **argv)
 
     int real = 0;
 
-    int nrecords = game_records.size();
+    int nrecords = g.game_records.size();
     #pragma omp parallel for reduction(+:tot_ball, tot_rec, real)
     for (int i=0; i<nrecords; i++) {
-        vector<sensor_record>& step = game_records[i];
+        vector<sensor_record>& step = g.game_records[i];
 
         //check if interrupted
-        bool interrupted = false;
-        for(interruption inter : interruptions) {
-            interrupted &= (step[0].ts >= inter.start && step[0].ts <= inter.end);
-        }
-
+        bool interrupted = g.is_interrupted_at_time(step[0].ts);
 
         if(!interrupted) {
             //get balls positions
             vector<sensor_record> step_balls;
             for(sensor_record rec : step) {
-                if(balls->find(rec.sid) != balls->end()) {
+                if(g.balls->find(rec.sid) != g.balls->end()) {
                     step_balls.push_back(rec);
                 }
             }
@@ -131,8 +81,8 @@ int main(int argc, char **argv)
                 float mindist = std::numeric_limits<float>::infinity();
                 int nearid = 0;
                 for (sensor_record rec : step) {
-                    if (balls->find(rec.sid) == balls->end() &&
-                        sensorPlayerIdx[rec.sid] != referee_idx) {
+                    if (g.balls->find(rec.sid) == g.balls->end() &&
+                        g.sensorPlayerIdx[rec.sid] != g.referee_idx) {
                         float dist = distance(ball, rec);
                         if (dist < mindist) {
                             nearid = rec.sid;
@@ -143,7 +93,7 @@ int main(int argc, char **argv)
 
                 if (mindist != std::numeric_limits<double>::infinity() && mindist < K * 1000) {
                     real++;
-                    double& this_possession = possession[sensorPlayerIdx[nearid]];
+                    double& this_possession = possession[g.sensorPlayerIdx[nearid]];
                     #pragma omp atomic
                     this_possession += toAdd;
                     //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
@@ -154,9 +104,9 @@ int main(int argc, char **argv)
 
     double total_possession = 0;
     double total_actual = 0;
-    for(unsigned int pl = 0; pl < players.size(); pl++) {
-        if(pl != referee_idx) {
-            string filename = players[pl].name;
+    for(unsigned int pl = 0; pl < g.players.size(); pl++) {
+        if(pl != g.referee_idx) {
+            string filename = g.players[pl].name;
             std::replace(filename.begin(), filename.end(), ' ', '_');
             filename.append(".csv");
 
@@ -176,20 +126,20 @@ int main(int argc, char **argv)
             total_possession += player_possession;
             total_actual += possession[pl];
 
-            cout << players[pl].name << " expected " << player_possession << ", got " << possession[pl]
+            cout << g.players[pl].name << " expected " << player_possession << ", got " << possession[pl]
                  << endl;
         }
     }
 
     float tot = 0;
-    for(unsigned int e = 1; e < game_events.size()-2;e += 2) {
-        tot += (game_events[e+1].ts - game_events[e].ts);
+    for(unsigned int e = 1; e < g.game_events.size()-2;e += 2) {
+        tot += (g.game_events[e+1].ts - g.game_events[e].ts);
     }
     tot /= 1000000000000;
 
     float interr = 0;
-    for(unsigned int e = 2; e < game_events.size()-2;e += 2) {
-        interr += game_events[e+1].ts - game_events[e].ts;
+    for(unsigned int e = 2; e < g.game_events.size()-2;e += 2) {
+        interr += g.game_events[e+1].ts - g.game_events[e].ts;
     }
     interr /= 1000000000000;
 

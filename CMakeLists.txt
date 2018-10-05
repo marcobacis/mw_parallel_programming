@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ggdb --std=c++0x -O3")
 # Directories
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 set(SOURCES_DIR "${PROJECT_SOURCE_DIR}/src")
-file(GLOB SOURCES "${SOURCES_DIR}/*.cpp")
+file(GLOB SOURCES "${SOURCES_DIR}/*.cpp" "${INCLUDE_DIR}/*.h")
 
 #MPI Library include/flags
 #find_package(MPI REQUIRED)

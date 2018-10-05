@@ -35,3 +35,4 @@ build
 *.sublime-*
 full-game.csv
 *.mov
+.vscode
