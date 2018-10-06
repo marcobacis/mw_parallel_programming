@@ -26,7 +26,7 @@ void game::load_from_directory(fs::path basepath)
     loadBalls(basepath / fs::path("balls.csv"), balls);
 
     for(unsigned int p = 0; p < players.size(); p++) {
-        for(unsigned int s : players[p].sensors) {
+        for(sensor_id_t s : players[p].sensors) {
             if(s != 0)
                 sensorPlayerIdx[s] = p;
         }

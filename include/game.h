@@ -24,7 +24,7 @@ public:
     std::vector<player> players;             //! Players data
     std::set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
     std::vector<interruption> interruptions;
-    std::map<unsigned int, unsigned int> sensorPlayerIdx;
+    std::map<sensor_id_t, unsigned int> sensorPlayerIdx;
     unsigned int referee_idx = 0;
 
     void load_from_directory(fs::path basepath);
