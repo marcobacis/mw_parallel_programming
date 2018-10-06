@@ -4,8 +4,9 @@
 #define EVENT_SEP ';'
 #define PLAYER_SEP ','
 
-sensor_record parseSensorRecord(std::string line) {
 
+sensor_record parseSensorRecord(std::string line)
+{
     sensor_record result;
     std::stringstream lineStream(line);
     std::string cell;
@@ -34,8 +35,8 @@ sensor_record parseSensorRecord(std::string line) {
 }
 
 
-referee_event parseRefereeEvent(std::string line, unsigned long int base_ts) {
-
+referee_event parseRefereeEvent(std::string line, unsigned long int base_ts)
+{
     std::stringstream lineStream(line);
 
     std::string cell;
@@ -73,8 +74,8 @@ referee_event parseRefereeEvent(std::string line, unsigned long int base_ts) {
     return event;
 }
 
-player parsePlayer(std::string line) {
-
+player parsePlayer(std::string line)
+{
     std::stringstream lineStream(line);
     std::string cell;
 
@@ -97,15 +98,15 @@ player parsePlayer(std::string line) {
         player_read.team = cell[0];
 
     //player sensors
-    for (int i = 0; i < MAX_PLAYER_SENSORS && std::getline(lineStream, cell, PLAYER_SEP); i++) {
-        player_read.sensors[i] = std::stoul(cell);
+    for (int i = 0; std::getline(lineStream, cell, PLAYER_SEP); i++) {
+        player_read.sensors.push_back(std::stoul(cell));
     }
 
     return player_read;
 }
 
-void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector) {
-
+void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector)
+{
     std::ifstream game_file;
 
     DBOUT << "Loading game file\n";
@@ -146,7 +147,8 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
 
 
 void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vector,
-                    unsigned long int base_ts) {
+                    unsigned long int base_ts)
+{
     std::ifstream events_file;
 
     events_file.open(file_path);
@@ -165,8 +167,8 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
 }
 
 
-void loadPlayers(fs::path file_path, std::vector<player> &players) {
-
+void loadPlayers(fs::path file_path, std::vector<player> &players)
+{
     std::ifstream players_file;
 
     players_file.open(file_path);
@@ -182,8 +184,8 @@ void loadPlayers(fs::path file_path, std::vector<player> &players) {
     }
 }
 
-void loadBalls(fs::path file_path, std::set<unsigned int> balls[]) {
-
+void loadBalls(fs::path file_path, std::set<unsigned int>& balls)
+{
     std::ifstream balls_file;
 
     balls_file.open(file_path);
@@ -199,7 +201,7 @@ void loadBalls(fs::path file_path, std::set<unsigned int> balls[]) {
         std::string ball;
         while(lineStream.rdstate() != std::ios_base::eofbit) {
             std::getline(lineStream, ball, ',');
-            balls[i].insert(std::stoul(ball));
+            balls.insert(std::stoul(ball));
         }
     }
 }

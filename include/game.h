@@ -22,13 +22,13 @@ public:
     std::vector<std::vector<sensor_record> > game_records; //! Sensor data for the entire game
     std::vector<referee_event> game_events;  //! Referee events for the entire game
     std::vector<player> players;             //! Players data
-    std::set<unsigned int> balls[2];         //! For each of the two halves, set of the used balls (might be useless)
+    std::set<sensor_id_t> balls;             //! For each of the two halves, set of the used balls (might be useless)
     std::vector<interruption> interruptions;
     std::map<sensor_id_t, unsigned int> sensorPlayerIdx;
     unsigned int referee_idx = 0;
 
     void load_from_directory(fs::path basepath);
-    
+
     bool is_interrupted_at_time(sensor_timestamp_t ts) const
     {
         for(interruption inter : interruptions) {
@@ -36,6 +36,21 @@ public:
                 return true;
         }
         return false;
+    }
+
+    bool is_ball_sensor_id(sensor_id_t sid) const
+    {
+        return balls.find(sid) != balls.end();
+    }
+
+    bool is_player_sensor_id(sensor_id_t sid)
+    {
+        auto pi = sensorPlayerIdx.find(sid);
+        if (pi == sensorPlayerIdx.end())
+            return false;
+        if (pi->second == referee_idx)
+            return false;
+        return true;
     }
 
     bool is_ball_inside_field(sensor_record ball_record)

@@ -64,30 +64,30 @@ int main(int argc, char **argv)
 
         if(!interrupted) {
             //get balls positions
-            vector<sensor_record> step_balls;
-            for(sensor_record rec : step) {
-                if(g.balls->find(rec.sid) != g.balls->end() && g.is_ball_inside_field(rec)) {
-                    step_balls.push_back(rec);
+            vector<sensor_record *> step_balls;
+            vector<sensor_record *> step_players;
+            for(sensor_record& rec: step) {
+                if (g.is_ball_sensor_id(rec.sid) && g.is_ball_inside_field(rec)) {
+                    step_balls.push_back(&rec);
+                } else if (g.is_player_sensor_id(rec.sid)) {
+                    step_players.push_back(&rec);
                 }
             }
             
-            tot_rec += step.size() - step_balls.size();
+            tot_rec += step_players.size();
             tot_ball += step_balls.size();
 
             double toAdd = 0.005 / step_balls.size();
 
-            for(sensor_record ball : step_balls) {
+            for(sensor_record *ball: step_balls) {
                 //get nearest sensor
                 float mindist = std::numeric_limits<float>::infinity();
                 int nearid = 0;
-                for (sensor_record rec : step) {
-                    if (g.balls->find(rec.sid) == g.balls->end() &&
-                        g.sensorPlayerIdx[rec.sid] != g.referee_idx) {
-                        float dist = distance(ball, rec);
-                        if (dist < mindist) {
-                            nearid = rec.sid;
-                            mindist = dist;
-                        }
+                for (sensor_record *rec: step_players) {
+                    float dist = distance(*ball, *rec);
+                    if (dist < mindist) {
+                        nearid = rec->sid;
+                        mindist = dist;
                     }
                 }
 

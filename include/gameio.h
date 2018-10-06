@@ -69,6 +69,6 @@ void loadPlayers(std::experimental::filesystem::path file_path, std::vector<play
  * @param file_path Balls' file path
  * @param balls the loaded balls
  */
-void loadBalls(fs::path file_path, std::set<unsigned int> balls[]);
+void loadBalls(fs::path file_path, std::set<unsigned int>& balls);
 
 #endif //MW_PARALLEL_PROGRAMMING_IO_H
