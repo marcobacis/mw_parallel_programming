@@ -24,39 +24,10 @@
 using namespace std;
 
 
-int main(int argc, char **argv)
+void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball, int& tot_rec, vector<double>& possession)
 {
-    if(argc < 3) {
-        cerr << "Usage: " << argv[0] << " K T files_base_path" << endl;
-        return 1;
-    }
-
-    double K = stof(argv[1]);
-    double T = stof(argv[2]);
-
-    fs::path basepath(argv[3]);
-
-    if(K < 1 || K > 5 || T < 1 || T > 60) {
-        cerr << "K must be between 1 and 5" << endl << "T must be between 1 and 60" << endl;
-        return 2;
-    }
-
-    game g;
-    g.load_from_directory(basepath);
-    
-    vector<double> possession(g.players.size(), 0);
-
-    //HERE GOES ALGORITHM
-    //bruteforce algorithm
-
-    int tot_ball = 0;
-    int tot_rec = 0;
-
-    int real = 0;
-
-    int nrecords = g.game_records.size();
-    #pragma omp parallel for reduction(+:tot_ball, tot_rec, real)
-    for (int i=0; i<nrecords; i++) {
+    #pragma omp parallel for reduction(+:tot_ball, tot_rec)
+    for (int i=i_start; i<i_end; i++) {
         vector<sensor_record>& step = g.game_records[i];
 
         //check if interrupted
@@ -92,7 +63,6 @@ int main(int argc, char **argv)
                 }
 
                 if (mindist != std::numeric_limits<double>::infinity() && mindist < K * 1000) {
-                    real++;
                     double& this_possession = possession[g.sensorPlayerIdx[nearid]];
                     #pragma omp atomic
                     this_possession += toAdd;
@@ -101,7 +71,72 @@ int main(int argc, char **argv)
             }
         }
     }
+}
 
+
+void print_possession(game& g, vector<double>& possession)
+{
+    for (int pl=0; pl<possession.size(); pl++) {
+        if (pl == g.referee_idx)
+            continue;
+        DBOUT << "player " << g.players[pl].name << ", possession = " << possession[pl] << endl;
+    }
+}
+
+
+int main(int argc, char **argv)
+{
+    if(argc < 3) {
+        cerr << "Usage: " << argv[0] << " K T files_base_path" << endl;
+        return 1;
+    }
+
+    double K = stof(argv[1]);
+    double T = stof(argv[2]);
+
+    fs::path basepath(argv[3]);
+
+    if(K < 1 || K > 5 || T < 1 || T > 60) {
+        cerr << "K must be between 1 and 5" << endl << "T must be between 1 and 60" << endl;
+        return 2;
+    }
+
+    game g;
+    g.load_from_directory(basepath);
+    
+    vector<double> possession(g.players.size(), 0);
+
+    //HERE GOES ALGORITHM
+
+    int tot_ball = 0;
+    int tot_rec = 0;
+
+    int interval_start = 0;
+    int interval_end = 0;
+    sensor_timestamp_t interval_start_time = g.game_records[0][0].ts;
+    sensor_timestamp_t interval_end_time = interval_start_time;
+
+    int nrecords = g.game_records.size();
+    for (int i=1; i<nrecords; i++) {
+        /* The data is in g.game_records but we simulate getting it in real time
+         * by scanning through it linearly */
+        vector<sensor_record>& step = g.game_records[i];
+
+        interval_end = i;
+        interval_end_time = step[0].ts;
+        if (interval_end_time - interval_start_time > T * one_second) {
+            accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
+            DBOUT << "possession at time " << interval_end_time / one_second << " s" << endl;
+            print_possession(g, possession);
+            DBOUT << endl;
+            interval_start = interval_end;
+            interval_start_time = interval_end_time;
+        }
+    }
+    
+    accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
+
+    DBOUT << "final possession stats: " << endl;
     double total_possession = 0;
     double total_actual = 0;
     for(unsigned int pl = 0; pl < g.players.size(); pl++) {

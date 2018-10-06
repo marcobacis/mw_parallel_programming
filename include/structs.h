@@ -8,6 +8,8 @@
 
 
 typedef unsigned long int sensor_timestamp_t;
+const sensor_timestamp_t one_second = 1000000000000 / SENSOR_FREQ;
+
 typedef unsigned int sensor_id_t;
 
 /**
@@ -15,7 +17,7 @@ typedef unsigned int sensor_id_t;
  */
 struct sensor_record {
     sensor_id_t sid;       // sensor id
-    sensor_timestamp_t ts;   // timestamp in picoseconds
+    sensor_timestamp_t ts;   // timestamp in NOT picoseconds
     int x;         // x position (in mm)
     int y;         // y position (in mm)
     int z;         // z position (in mm)
@@ -34,7 +36,7 @@ enum event_type {
 struct referee_event {
     unsigned int id;
     event_type type;
-    sensor_timestamp_t ts;    //in picoseconds
+    sensor_timestamp_t ts;    //in MAYBE picoseconds????
     unsigned int counter; //different for each unique event name
 };
 
