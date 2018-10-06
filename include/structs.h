@@ -54,7 +54,9 @@ struct player {
 };
 
 
-inline float distance(sensor_record a, sensor_record b) {
+inline float distance(sensor_record& a, sensor_record& b) {
     return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) + (a.z-b.z)*(a.z-b.z));
 }
+
+
 #endif //MW_PARALLEL_PROGRAMMING_STRUCTS_H
