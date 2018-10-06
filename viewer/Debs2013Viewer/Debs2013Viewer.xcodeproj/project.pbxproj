@@ -14,6 +14,7 @@
 		0148665C2168150B00D80C45 /* GameStateView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0148665B2168150B00D80C45 /* GameStateView.m */; };
 		0148665F216815CB00D80C45 /* GameObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0148665E216815CB00D80C45 /* GameObject.m */; };
 		014866622168240700D80C45 /* GameDataStream.m in Sources */ = {isa = PBXBuildFile; fileRef = 014866612168240700D80C45 /* GameDataStream.m */; };
+		0185E9532168F5FD00C604CC /* Matrix.m in Sources */ = {isa = PBXBuildFile; fileRef = 0185E9522168F5FD00C604CC /* Matrix.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,8 @@
 		0148665E216815CB00D80C45 /* GameObject.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameObject.m; sourceTree = "<group>"; };
 		014866602168240700D80C45 /* GameDataStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameDataStream.h; sourceTree = "<group>"; };
 		014866612168240700D80C45 /* GameDataStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameDataStream.m; sourceTree = "<group>"; };
+		0185E9512168F5FD00C604CC /* Matrix.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Matrix.h; sourceTree = "<group>"; };
+		0185E9522168F5FD00C604CC /* Matrix.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Matrix.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,6 +73,8 @@
 				0148664E216814CC00D80C45 /* MainMenu.xib */,
 				0148665A2168150B00D80C45 /* GameStateView.h */,
 				0148665B2168150B00D80C45 /* GameStateView.m */,
+				0185E9512168F5FD00C604CC /* Matrix.h */,
+				0185E9522168F5FD00C604CC /* Matrix.m */,
 				0148665D216815CB00D80C45 /* GameObject.h */,
 				0148665E216815CB00D80C45 /* GameObject.m */,
 				01486651216814CC00D80C45 /* Info.plist */,
@@ -154,6 +159,7 @@
 			files = (
 				0148665F216815CB00D80C45 /* GameObject.m in Sources */,
 				0148665C2168150B00D80C45 /* GameStateView.m in Sources */,
+				0185E9532168F5FD00C604CC /* Matrix.m in Sources */,
 				01486653216814CC00D80C45 /* main.m in Sources */,
 				0148664B216814CA00D80C45 /* AppDelegate.m in Sources */,
 				014866622168240700D80C45 /* GameDataStream.m in Sources */,

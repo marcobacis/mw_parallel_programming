@@ -12,7 +12,7 @@
             </connections>
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
-        <customObject id="-3" userLabel="Application"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate">
             <connections>
                 <outlet property="gsvw" destination="Mvt-6v-GMs" id="yoM-FZ-7jT"/>
@@ -692,6 +692,81 @@
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="Mvt-6v-GMs" customClass="GameStateView">
                         <rect key="frame" x="0.0" y="43" width="647" height="421"/>
                     </customView>
+                    <stackView distribution="fill" orientation="vertical" alignment="leading" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dii-3h-Mhh">
+                        <rect key="frame" x="20" y="402" width="201" height="42"/>
+                        <subviews>
+                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="BQV-gs-80e">
+                                <rect key="frame" x="0.0" y="25" width="186" height="17"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="bl3-qx-6gk">
+                                        <rect key="frame" x="-2" y="0.0" width="90" height="17"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Camera Angle" id="7VB-Pe-Yzu">
+                                            <font key="font" metaFont="system"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="pSh-bm-uvH">
+                                        <rect key="frame" x="94" y="3" width="92" height="15"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="92" id="EdV-tO-YMY"/>
+                                        </constraints>
+                                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" maxValue="1.5707500000000001" doubleValue="1.5707500000000001" tickMarkPosition="above" sliderType="linear" id="fOc-r4-c7r"/>
+                                        <connections>
+                                            <binding destination="Voe-Tx-rLC" name="value" keyPath="self.cameraAngle" id="E2N-6m-iog"/>
+                                        </connections>
+                                    </slider>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                            <stackView distribution="fill" orientation="horizontal" alignment="top" horizontalStackHuggingPriority="249.99998474121094" verticalStackHuggingPriority="249.99998474121094" detachesHiddenViews="YES" translatesAutoresizingMaskIntoConstraints="NO" id="49n-0m-9gc">
+                                <rect key="frame" x="0.0" y="0.0" width="201" height="17"/>
+                                <subviews>
+                                    <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="5ZC-N1-FvU">
+                                        <rect key="frame" x="-2" y="0.0" width="105" height="17"/>
+                                        <textFieldCell key="cell" lineBreakMode="clipping" title="Camera Rotation" id="SrO-2n-P8u">
+                                            <font key="font" usesAppearanceFont="YES"/>
+                                            <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        </textFieldCell>
+                                    </textField>
+                                    <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Zy9-3q-pCa">
+                                        <rect key="frame" x="109" y="-1" width="92" height="18"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="92" id="ckF-a7-q77"/>
+                                        </constraints>
+                                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1.5707500000000001" maxValue="1.5707500000000001" tickMarkPosition="above" numberOfTickMarks="1" sliderType="linear" id="lRx-dy-IIT"/>
+                                        <connections>
+                                            <binding destination="Voe-Tx-rLC" name="value" keyPath="self.cameraRotation" id="mGe-ts-D8V"/>
+                                        </connections>
+                                    </slider>
+                                </subviews>
+                                <visibilityPriorities>
+                                    <integer value="1000"/>
+                                    <integer value="1000"/>
+                                </visibilityPriorities>
+                                <customSpacing>
+                                    <real value="3.4028234663852886e+38"/>
+                                    <real value="3.4028234663852886e+38"/>
+                                </customSpacing>
+                            </stackView>
+                        </subviews>
+                        <visibilityPriorities>
+                            <integer value="1000"/>
+                            <integer value="1000"/>
+                        </visibilityPriorities>
+                        <customSpacing>
+                            <real value="3.4028234663852886e+38"/>
+                            <real value="3.4028234663852886e+38"/>
+                        </customSpacing>
+                    </stackView>
                     <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="DPF-4f-0fQ">
                         <rect key="frame" x="83" y="18" width="418" height="19"/>
                         <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="100" doubleValue="50" tickMarkPosition="above" sliderType="linear" id="ltw-ND-4tm"/>
@@ -734,6 +809,8 @@
                     <constraint firstItem="DPF-4f-0fQ" firstAttribute="centerY" secondItem="E9B-iR-ubh" secondAttribute="centerY" id="Tru-uy-yHH"/>
                     <constraint firstAttribute="trailing" secondItem="Mvt-6v-GMs" secondAttribute="trailing" id="UWc-1L-BkK"/>
                     <constraint firstItem="elo-At-IGS" firstAttribute="centerY" secondItem="DPF-4f-0fQ" secondAttribute="centerY" id="Xlw-tF-imk"/>
+                    <constraint firstItem="Dii-3h-Mhh" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" symbolic="YES" id="aZw-Xn-COJ"/>
+                    <constraint firstItem="Dii-3h-Mhh" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="axB-Ew-Jnq"/>
                     <constraint firstAttribute="trailing" secondItem="elo-At-IGS" secondAttribute="trailing" constant="20" id="fap-yu-EbP"/>
                     <constraint firstItem="elo-At-IGS" firstAttribute="leading" secondItem="DPF-4f-0fQ" secondAttribute="trailing" constant="8" id="xOX-xp-amn"/>
                 </constraints>
@@ -741,5 +818,6 @@
             <point key="canvasLocation" x="236.5" y="-67"/>
         </window>
         <numberFormatter formatterBehavior="default10_4" localizesFormat="NO" usesGroupingSeparator="NO" groupingSize="0" minimumIntegerDigits="0" maximumIntegerDigits="42" id="VIi-as-Ulf"/>
+        <userDefaultsController representsSharedInstance="YES" id="1GW-dI-auL"/>
     </objects>
 </document>

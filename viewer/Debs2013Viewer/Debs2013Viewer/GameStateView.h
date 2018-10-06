@@ -11,10 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class GameObject;
+@class Matrix;
 
 @interface GameStateView : NSView
 
-- (void)setWorldViewProjectionMatrix:(double *)wvpm;
+@property (nonatomic) Matrix *worldViewProjectionMatrix;
 @property (nonatomic) NSRect fieldRect;
 - (void)updateObjects:(NSDictionary <NSNumber *, GameObject *> *)obj;
 - (void)clearObjects;
