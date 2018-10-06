@@ -92,9 +92,9 @@
   
   [objects enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull objid, GameObject * _Nonnull obj, BOOL * _Nonnull stop) {
     [self drawObjectShadow:obj];
-    [self drawObject:obj identifier:objid];
-    if (![@[@(4), @(8), @(10), @(12)] containsObject:objid])
+    if (obj.drawExtraRadius)
       [self drawRadius:1000 aroundObject:obj];
+    [self drawObject:obj identifier:objid];
   }];
 }
 
@@ -129,8 +129,14 @@
   NSBezierPath *bp = [NSBezierPath bezierPathWithOvalInRect:NSMakeRect(oval_l, oval_t, oval_wh, oval_wh)];
   [bp fill];
   
+  NSDictionary *attrib = @{NSForegroundColorAttributeName: obj.color};
+  
   NSString *objidstr = [NSString stringWithFormat:@"%"PRIu64, (int64_t)objid.integerValue];
-  [objidstr drawAtPoint:NSMakePoint(xy[0], xy[1]) withAttributes:@{}];
+  [objidstr drawAtPoint:NSMakePoint(xy[0], xy[1]) withAttributes:attrib];
+  
+  if (obj.label) {
+    [obj.label drawAtPoint:NSMakePoint(xy[0], xy[1]-11.0) withAttributes:attrib];
+  }
 }
 
 
@@ -166,7 +172,7 @@
     [bp curveToPoint:dest controlPoint1:cp1 controlPoint2:cp2];
   }
   [bp closePath];
-  [obj.color setStroke];
+  [[obj.color colorWithAlphaComponent:.29] setStroke];
   [bp stroke];
 }
 

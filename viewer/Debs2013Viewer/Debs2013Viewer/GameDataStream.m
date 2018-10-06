@@ -14,6 +14,7 @@
 
 @implementation GameDataStream {
   FILE *fp;
+  NSMutableDictionary<NSNumber *, GameObject *> *sensorToDefaults;
 }
 
 
@@ -31,6 +32,49 @@
   [self lineAlignedSeek:len-IGNORED_PART_AT_END];
   _endTime = [self readCurrentRowAndAdvancing:NO][1].unsignedIntegerValue;
   fseeko(fp, 0, SEEK_SET);
+  
+  sensorToDefaults = [@{} mutableCopy];
+  
+  NSURL *playersf = [[path URLByDeletingLastPathComponent] URLByAppendingPathComponent:@"players.csv"];
+  NSString *players = [NSString stringWithContentsOfURL:playersf encoding:NSUTF8StringEncoding error:nil];
+  if (players) {
+    NSArray<NSString *> *playerlist = [players componentsSeparatedByString:@"\n"];
+    for (NSString *player in playerlist) {
+      NSArray<NSString *> *info = [player componentsSeparatedByString:@","];
+      NSColor *color;
+      switch (info[2].UTF8String[0]) {
+        case 'A': color = [NSColor blueColor]; break;
+        case 'B': color = [NSColor redColor]; break;
+        default: color = [NSColor greenColor]; break;
+      }
+      for (int i=3; i<info.count; i++) {
+        int n = [info[i] intValue];
+        if (n != 0) {
+          GameObject *obj = [[GameObject alloc] init];
+          if (i == 3)
+            obj.label = info[0];
+          obj.color = color;
+          obj.size = 3.0;
+          obj.drawExtraRadius = YES;
+          [sensorToDefaults setObject:obj forKey:@(n)];
+        }
+      }
+    }
+  }
+  
+  NSURL *ballsf = [[path URLByDeletingLastPathComponent] URLByAppendingPathComponent:@"balls.csv"];
+  NSString *balls = [NSString stringWithContentsOfURL:ballsf encoding:NSUTF8StringEncoding error:nil];
+  if (balls) {
+    NSArray<NSString *> *ballsegment = [balls componentsSeparatedByString:@"\n"];
+    for (NSString *balllist in ballsegment) {
+      NSArray<NSString *> *balls = [balllist componentsSeparatedByString:@","];
+      for (NSString *ball in balls) {
+        GameObject *obj = [[GameObject alloc] initWithColor:[NSColor magentaColor] size:5.0 label:@""];
+        [sensorToDefaults setObject:obj forKey:@([ball intValue])];
+      }
+    }
+  }
+  
   return self;
 }
 
@@ -122,9 +166,7 @@
     t1 = data[1].unsignedIntegerValue;
     GameObject *obj = [res objectForKey:data[0]];
     if (!obj) {
-      obj = [[GameObject alloc] init];
-      [obj setSize:3.0];
-      [obj setColor:[NSColor redColor]];
+      obj = [[GameObject alloc] initWithGameObject:sensorToDefaults[data[0]]];
       [res setObject:obj forKey:data[0]];
     }
     [obj setX:data[2].doubleValue];

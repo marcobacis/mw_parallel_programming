@@ -12,6 +12,9 @@
 #import "Matrix.h"
 
 
+const NSTimeInterval frameRate = 1.0/60.0;
+
+
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
@@ -111,7 +114,7 @@
 
 - (void)nextFrame
 {
-  NSDictionary *data = [gds advanceByTimeInterval:1000000000000/60];
+  NSDictionary *data = [gds advanceByTimeInterval:1000000000000 * frameRate];
   [self.gsvw clearObjects];
   [self.gsvw updateObjects:data];
   [self.timeSlider setDoubleValue:[gds currentTime]];
@@ -122,8 +125,8 @@
 - (IBAction)scrub:(id)sender
 {
   [self pause];
-  [gds skipToTime:self.timeSlider.integerValue - 1000000000000/60];
-  NSDictionary *data = [gds advanceByTimeInterval:1000000000000/60];
+  [gds skipToTime:self.timeSlider.integerValue - (1000000000000 * frameRate)];
+  NSDictionary *data = [gds advanceByTimeInterval:(1000000000000 * frameRate)];
   [self.gsvw clearObjects];
   [self.gsvw updateObjects:data];
   [self.timeTextField setIntegerValue:[self->gds currentTime]];
@@ -145,7 +148,7 @@
     return;
   if (!playbackTimer) {
     __weak AppDelegate *weakSelf = self;
-    playbackTimer = [NSTimer scheduledTimerWithTimeInterval:1.0/60.0 repeats:YES block:^(NSTimer *tmr){
+    playbackTimer = [NSTimer scheduledTimerWithTimeInterval:frameRate repeats:YES block:^(NSTimer *tmr){
       AppDelegate *strongSelf = weakSelf;
       [strongSelf nextFrame];
     }];
