@@ -28,8 +28,26 @@ public:
     unsigned int referee_idx = 0;
 
     void load_from_directory(fs::path basepath);
-    bool is_interrupted_at_time(sensor_timestamp_t ts);
-    bool is_ball_inside_field(sensor_record ball_record);
+    
+    bool is_interrupted_at_time(sensor_timestamp_t ts) const
+    {
+        for(interruption inter : interruptions) {
+            if (ts >= inter.start && ts <= inter.end)
+                return true;
+        }
+        return false;
+    }
+
+    bool is_ball_inside_field(sensor_record ball_record)
+    {
+        int y = ball_record.y;
+        int x = ball_record.x;
+
+        //Field points taken from the DEBS2013 paper
+        // (approximated to the most inside measures (e.g 0 instead of -50 on top etc..)
+
+        return (y > 0 && y < 52477) && (x > -33960 && x < 33941);
+    }
 };
 
 
