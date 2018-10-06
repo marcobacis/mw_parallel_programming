@@ -66,7 +66,7 @@ int main(int argc, char **argv)
             //get balls positions
             vector<sensor_record> step_balls;
             for(sensor_record rec : step) {
-                if(g.balls->find(rec.sid) != g.balls->end()) {
+                if(g.balls->find(rec.sid) != g.balls->end() && g.is_ball_inside_field(rec)) {
                     step_balls.push_back(rec);
                 }
             }

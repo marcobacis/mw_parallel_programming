@@ -29,6 +29,7 @@ public:
 
     void load_from_directory(fs::path basepath);
     bool is_interrupted_at_time(sensor_timestamp_t ts);
+    bool is_ball_inside_field(sensor_record ball_record);
 };
 
 
