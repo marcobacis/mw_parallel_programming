@@ -3,12 +3,12 @@
 
 #include <math.h>
 
-#define SENSOR_FREQ 5000000000 // 1 sec / 200 Hz = 1e^12 / 200 = 5e^9
-#define BALL_FREQ 500000000 // 2kHz
+#define      SENSOR_SAMPLE_PERIOD 5000000000  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
+#define BALL_SENSOR_SAMPLE_PERIOD  500000000  // 2 kHz
 
 
 typedef unsigned long int sensor_timestamp_t;
-const sensor_timestamp_t one_second = 1000000000000 / SENSOR_FREQ;
+const sensor_timestamp_t one_second = 1000000000000 / SENSOR_SAMPLE_PERIOD;
 
 typedef unsigned int sensor_id_t;
 
@@ -17,7 +17,7 @@ typedef unsigned int sensor_id_t;
  */
 struct sensor_record {
     sensor_id_t sid;       // sensor id
-    sensor_timestamp_t ts;   // timestamp in NOT picoseconds
+    sensor_timestamp_t ts; // timestamp in sensor units
     int x;         // x position (in mm)
     int y;         // y position (in mm)
     int z;         // z position (in mm)
@@ -42,8 +42,8 @@ struct referee_event {
 
 
 struct interruption {
-    sensor_timestamp_t start;
-    sensor_timestamp_t end;
+    sensor_timestamp_t start;   // in sensor units
+    sensor_timestamp_t end;     // in sensor units
 };
 
 struct player {

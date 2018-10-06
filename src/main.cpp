@@ -48,7 +48,7 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
             tot_rec += step_players.size();
             tot_ball += step_balls.size();
 
-            double toAdd = 0.005 / step_balls.size();
+            double toAdd = ((double)(SENSOR_SAMPLE_PERIOD) / 1000000000000.0) / (double)(step.balls.size());
 
             for(sensor_record *ball: step_balls) {
                 //get nearest sensor
@@ -76,7 +76,7 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
 
 void print_possession(game& g, vector<double>& possession)
 {
-    for (int pl=0; pl<possession.size(); pl++) {
+    for (unsigned int pl=0; pl<possession.size(); pl++) {
         if (pl == g.referee_idx)
             continue;
         DBOUT << "player " << g.players[pl].name << ", possession = " << possession[pl] << endl;

@@ -17,7 +17,7 @@ sensor_record parseSensorRecord(std::string line)
 
     //ts
     std::getline(lineStream, cell, GAME_SEP);
-    result.ts = std::stoull(cell) / SENSOR_FREQ;
+    result.ts = std::stoull(cell) / SENSOR_SAMPLE_PERIOD;
 
     //x
     std::getline(lineStream, cell, GAME_SEP);
