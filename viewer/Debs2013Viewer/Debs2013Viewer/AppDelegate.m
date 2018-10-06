@@ -86,6 +86,13 @@ const NSTimeInterval frameRate = 1.0/60.0;
 }
 
 
+- (IBAction)setExtraRadius:(id)sender
+{
+  double v = [sender doubleValue];
+  [self.gsvw setExtraRadius:v];
+}
+
+
 - (void)setupProjectionMatrix
 {
   Matrix *wvpm;

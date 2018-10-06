@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) Matrix *worldViewProjectionMatrix;
 @property (nonatomic) NSRect fieldRect;
+@property (nonatomic) double extraRadius;
 - (void)updateObjects:(NSDictionary <NSNumber *, GameObject *> *)obj;
 - (void)clearObjects;
 

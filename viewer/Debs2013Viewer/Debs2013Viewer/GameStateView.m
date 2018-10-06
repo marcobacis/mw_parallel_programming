@@ -54,6 +54,13 @@
 }
 
 
+- (void)setExtraRadius:(double)extraRadius
+{
+  _extraRadius = extraRadius;
+  [self setNeedsDisplay:YES];
+}
+
+
 - (void)perspTransformPoint:(const double *)in_xyzh intoPoint:(double *)out_xy
 {
   double out_xyzh[4];
@@ -93,7 +100,7 @@
   [objects enumerateKeysAndObjectsUsingBlock:^(NSNumber * _Nonnull objid, GameObject * _Nonnull obj, BOOL * _Nonnull stop) {
     [self drawObjectShadow:obj];
     if (obj.drawExtraRadius)
-      [self drawRadius:1000 aroundObject:obj];
+      [self drawRadius:self.extraRadius aroundObject:obj];
     [self drawObject:obj identifier:objid];
   }];
 }
