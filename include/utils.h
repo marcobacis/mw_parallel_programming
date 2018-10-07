@@ -23,8 +23,8 @@
 namespace fs = std::experimental::filesystem;
 
 
-typedef unsigned long int sensor_timestamp_t;
-const sensor_timestamp_t one_second = 1000000000000;
+typedef unsigned long int ps_timestamp_t;
+const ps_timestamp_t one_second = 1000000000000;
 
 
 /**
@@ -33,7 +33,7 @@ const sensor_timestamp_t one_second = 1000000000000;
  * @param field The string representing the datetime to parse
  * @return The datetime timestamp in picoseconds
  */
-sensor_timestamp_t parse_datetime(std::string field);
+ps_timestamp_t parse_datetime(std::string field);
 
 
 #endif //MW_PARALLEL_PROGRAMMING_UTILS_H

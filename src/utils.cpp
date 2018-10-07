@@ -5,7 +5,7 @@
 #include "utils.h"
 
 
-sensor_timestamp_t parse_datetime(std::string str)
+ps_timestamp_t parse_datetime(std::string str)
 {
     std::string field;
     std::stringstream dateStream(str);

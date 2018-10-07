@@ -17,8 +17,8 @@
 #define END_SECOND    14879639146403495
 
 
-const sensor_timestamp_t sensor_sample_period = 5000000000;  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
-const sensor_timestamp_t ball_sensor_sample_period = 500000000; // 2 kHz
+const ps_timestamp_t sensor_sample_period = 5000000000;  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
+const ps_timestamp_t ball_sensor_sample_period = 500000000; // 2 kHz
 
 typedef unsigned int sensor_id_t;
 
@@ -27,7 +27,7 @@ typedef unsigned int sensor_id_t;
  */
 struct sensor_record {
     sensor_id_t sid;       // sensor id
-    sensor_timestamp_t ts; // timestamp in sensor units
+    ps_timestamp_t ts; // timestamp in sensor units
     int x;         // x position (in mm)
     int y;         // y position (in mm)
     int z;         // z position (in mm)
@@ -46,14 +46,14 @@ enum event_type {
 struct referee_event {
     unsigned int id;
     event_type type;
-    sensor_timestamp_t ts;    //in picoseconds
+    ps_timestamp_t ts;    //in picoseconds
     unsigned int counter;     //different for each unique event name
 };
 
 
 struct interruption {
-    sensor_timestamp_t start;   // in sensor units
-    sensor_timestamp_t end;     // in sensor units
+    ps_timestamp_t start;   // in sensor units
+    ps_timestamp_t end;     // in sensor units
 };
 
 struct player {
@@ -89,7 +89,7 @@ public:
 
     void load_from_directory(const fs::path& basepath);
 
-    bool is_interrupted_at_time(sensor_timestamp_t ts) const
+    bool is_interrupted_at_time(ps_timestamp_t ts) const
     {
         for(interruption inter : interruptions) {
             if (ts >= inter.start && ts <= inter.end)

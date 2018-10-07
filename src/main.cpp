@@ -113,8 +113,8 @@ int main(int argc, char **argv)
 
     int interval_start = 0;
     int interval_end = 0;
-    sensor_timestamp_t interval_start_time = g.game_records[0][0].ts;
-    sensor_timestamp_t interval_end_time = interval_start_time;
+    ps_timestamp_t interval_start_time = g.game_records[0][0].ts;
+    ps_timestamp_t interval_end_time = interval_start_time;
 
     int nrecords = g.game_records.size();
     for (int i=1; i<nrecords; i++) {
