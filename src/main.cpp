@@ -55,7 +55,7 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
                 double mindist = std::numeric_limits<double>::infinity();
                 int nearid = 0;
                 for (sensor_record *rec: step_players) {
-                    double dist = distance_on_ground(*ball, *rec);
+                    double dist = ball->distance_on_ground_to(*rec);
                     if (dist < mindist) {
                         nearid = rec->sid;
                         mindist = dist;

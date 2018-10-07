@@ -38,10 +38,8 @@ sensor_record parse_sensor_record(std::string line)
 referee_event parse_referee_event(std::string line, unsigned long int base_ts)
 {
     std::stringstream lineStream(line);
-
     std::string cell;
-
-    referee_event  event;
+    referee_event event;
 
     //event id
     std::getline(lineStream, cell, EVENT_SEP);
@@ -55,11 +53,11 @@ referee_event parse_referee_event(std::string line, unsigned long int base_ts)
     std::transform(cell.begin(), cell.end(), cell.begin(), ::tolower);
 
     if(cell.compare("gameinterruptionbegin") == 0) {
-        event.type = INT_BEGIN;
+        event.type = referee_event::type::INT_BEGIN;
     } else if (cell.compare("gameinterruptionend") == 0) {
-        event.type = INT_END;
+        event.type = referee_event::type::INT_END;
     } else {
-        event.type = OTHER_EVENT;
+        event.type = referee_event::type::OTHER;
     }
 
     //event timestamp (need to parse hh:mm:ss.sss, or just hh = 0 in the first case)

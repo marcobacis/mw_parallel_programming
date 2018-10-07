@@ -20,6 +20,7 @@
 const ps_timestamp_t sensor_sample_period = 5000000000;  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
 const ps_timestamp_t ball_sensor_sample_period = 500000000; // 2 kHz
 
+
 typedef unsigned int sensor_id_t;
 
 /**
@@ -31,21 +32,29 @@ struct sensor_record {
     int x;         // x position (in mm)
     int y;         // y position (in mm)
     int z;         // z position (in mm)
+
+    inline double distance_to(sensor_record& b)
+    {
+        return sqrt((x-b.x)*(x-b.x) + (y-b.y)*(y-b.y) + (z-b.z)*(z-b.z));
+    }
+
+    inline double distance_on_ground_to(sensor_record& b)
+    {
+        return sqrt((x-b.x)*(x-b.x) + (y-b.y)*(y-b.y));
+    }
 };
 
 /**
  * Referral event (goal, interruption begin/end) record structure
  */
-
-enum event_type { 
-    INT_BEGIN, 
-    INT_END, 
-    OTHER_EVENT
-};
-
 struct referee_event {
+    enum type { 
+        INT_BEGIN,
+        INT_END, 
+        OTHER
+    };
     unsigned int id;
-    event_type type;
+    type type;
     ps_timestamp_t ts;    //in picoseconds
     unsigned int counter;     //different for each unique event name
 };
@@ -56,6 +65,7 @@ struct interruption {
     ps_timestamp_t end;     // in sensor units
 };
 
+
 struct player {
     std::string name;                   /// Player name+surname
     char role;                          /// Role -> P = Player, G = Goalkeeper, R = Referee
@@ -63,18 +73,6 @@ struct player {
     std::vector<sensor_id_t> sensors;  /// 2 sensors ids for player, 4 for the goalkeeper
     player(): sensors(4) {}
 };
-
-
-inline double distance(sensor_record& a, sensor_record& b)
-{
-    return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y) + (a.z-b.z)*(a.z-b.z));
-}
-
-
-inline double distance_on_ground(sensor_record& a, sensor_record& b)
-{
-    return sqrt((a.x-b.x)*(a.x-b.x) + (a.y-b.y)*(a.y-b.y));
-}
 
 
 class game {
