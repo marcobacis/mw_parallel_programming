@@ -11,9 +11,8 @@
 #include <cctype>
 #include <locale>
 #include <set>
-
 #include "utils.h"
-#include "structs.h"
+#include "game.h"
 
 
 /**

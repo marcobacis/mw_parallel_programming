@@ -5,7 +5,7 @@
 using namespace std;
 
 
-void game::load_from_directory(fs::path basepath)
+void game::load_from_directory(const fs::path& basepath)
 {
     game_records.reserve(50000000); //we know approximately the number of records
 
