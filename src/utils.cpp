@@ -4,26 +4,6 @@
 
 #include "utils.h"
 
-void printLoadPerc(unsigned long int count, unsigned long int total, bool ret)
-{
-    unsigned int perc = count * 100 / total;
-
-    DBOUT << "[";
-
-    for(unsigned int i = 0; i < 100; i++) {
-        if(i < perc) DBOUT << "=";
-        else if (i == perc) DBOUT << ">";
-        else DBOUT << " ";
-    }
-
-    DBOUT << "] " << perc << "%";
-
-    if(ret) DBOUT << "\r";
-    else DBOUT << std::endl;
-
-    DBOUT.flush();
-}
-
 
 unsigned long int parse_datetime(std::string str)
 {
