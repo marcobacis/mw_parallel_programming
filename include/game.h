@@ -61,7 +61,7 @@ public:
         //Field points taken from the DEBS2013 paper
         // (approximated to the most inside measures (e.g 0 instead of -50 on top etc..)
 
-        return (y > 0 && y < 52477) && (x > -33960 && x < 33941);
+        return (x > 0 && x < 52477) && (y > -33960 && y < 33941);
     }
 };
 
