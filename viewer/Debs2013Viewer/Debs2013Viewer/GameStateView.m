@@ -113,7 +113,7 @@
   
   [self perspTransformPoint:in_xyzh intoPoint:xy];
   
-  [[NSColor grayColor] setFill];
+  [[NSColor colorWithCalibratedWhite:0.0 alpha:0.3] setFill];
   CGFloat oval_l = xy[0] - (obj.size / 2.0);
   CGFloat oval_t = xy[1] - (obj.size / 2.0);
   CGFloat oval_wh = obj.size;

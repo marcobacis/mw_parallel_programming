@@ -44,6 +44,7 @@ const NSTimeInterval frameRate = 1.0/60.0;
   self.cameraAngle = 60.0 * M_PI / 180.0;
   self.cameraRotation = 0.0;
   self.viewIn3D = YES;
+  self.gsvw.extraRadius = 1000;
   
   NSOpenPanel *fop = [NSOpenPanel openPanel];
   [fop setAllowedFileTypes:@[@"csv"]];
