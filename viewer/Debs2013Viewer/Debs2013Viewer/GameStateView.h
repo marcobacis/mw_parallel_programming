@@ -15,7 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GameStateView : NSView
 
-@property (nonatomic) Matrix *worldViewProjectionMatrix;
+@property (nonatomic) Matrix *projectionMatrix;
+@property (nonatomic) Matrix *viewMatrix;
 @property (nonatomic) NSRect fieldRect;
 @property (nonatomic) double extraRadius;
 - (void)updateObjects:(NSDictionary <NSNumber *, GameObject *> *)obj;

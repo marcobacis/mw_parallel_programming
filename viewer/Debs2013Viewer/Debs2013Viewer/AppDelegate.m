@@ -12,7 +12,7 @@
 #import "Matrix.h"
 
 
-const NSTimeInterval frameRate = 1.0/60.0;
+const NSTimeInterval frameRate = 1.0/30.0;
 
 
 @interface AppDelegate ()
@@ -96,27 +96,31 @@ const NSTimeInterval frameRate = 1.0/60.0;
 
 - (void)setupProjectionMatrix
 {
-  Matrix *wvpm;
+  Matrix *vm;
+  Matrix *pm;
   
   if (!self.viewIn3D) {
     double scaleFactor = 1.0/((33960.0+33965.0+10000)/2.0);
-    wvpm = [[Matrix scalingByX:scaleFactor y:scaleFactor z:scaleFactor] multiply:
+    vm = [Matrix scalingByX:1.0 y:1.0 z:1.0];
+    pm = [[Matrix scalingByX:scaleFactor y:scaleFactor z:scaleFactor] multiply:
         [Matrix translationOfX:(-52483.0)/2.0 y:0 z:0]];
     
   } else {
     double cameraDistanceFromCenterOfField = 70000;
     double centerOfFieldX = 52483.0 / 2.0;
-    double cameraX = cameraDistanceFromCenterOfField * cos(self.cameraAngle) + centerOfFieldX;
+    double cameraX = cameraDistanceFromCenterOfField * cos(self.cameraAngle);
     double cameraZ = cameraDistanceFromCenterOfField * sin(self.cameraAngle);
     
-    Matrix *viewm =
-      [[[Matrix rotationAroundZAxisOf:-(self.cameraRotation + M_PI / 2.0)] multiply:
+    vm = [[[[[Matrix rotationAroundZAxisOf:-(M_PI / 2.0)] multiply:
         [Matrix rotationAroundYAxisOf:-(M_PI / 2.0 - self.cameraAngle)]] multiply:
-            [Matrix translationOfX:-cameraX y:0 z:-cameraZ]];
-    wvpm = [[Matrix perspectiveProjectionWithFovY:M_PI/3.0 nearPlane:1000 farPlane:cameraDistanceFromCenterOfField aspect:1.0] multiply:viewm];
+            [Matrix translationOfX:-cameraX y:0 z:-cameraZ]] multiply:
+              [Matrix rotationAroundZAxisOf:-self.cameraRotation]] multiply:
+                [Matrix translationOfX:-centerOfFieldX y:0 z:0]];
+    pm = [Matrix perspectiveProjectionWithFovY:M_PI/3.0 nearPlane:1000 farPlane:cameraDistanceFromCenterOfField aspect:1.0];
   }
   
-  [self.gsvw setWorldViewProjectionMatrix:wvpm];
+  [self.gsvw setViewMatrix:vm];
+  [self.gsvw setProjectionMatrix:pm];
 }
 
 

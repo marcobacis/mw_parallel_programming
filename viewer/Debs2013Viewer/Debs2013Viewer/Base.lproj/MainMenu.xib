@@ -687,7 +687,7 @@
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
                 <rect key="frame" x="0.0" y="0.0" width="647" height="464"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
                     <customView translatesAutoresizingMaskIntoConstraints="NO" id="Mvt-6v-GMs" customClass="GameStateView">
                         <rect key="frame" x="0.0" y="43" width="647" height="421"/>
@@ -742,7 +742,7 @@
                                         <constraints>
                                             <constraint firstAttribute="width" constant="92" id="ckF-a7-q77"/>
                                         </constraints>
-                                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-1.5707500000000001" maxValue="1.5707500000000001" tickMarkPosition="above" numberOfTickMarks="1" sliderType="linear" id="lRx-dy-IIT"/>
+                                        <sliderCell key="cell" controlSize="small" continuous="YES" state="on" alignment="left" minValue="-3.1415899999999999" maxValue="3.1415899999999999" tickMarkPosition="above" numberOfTickMarks="5" sliderType="linear" id="lRx-dy-IIT"/>
                                         <connections>
                                             <binding destination="Voe-Tx-rLC" name="value" keyPath="self.cameraRotation" id="mGe-ts-D8V"/>
                                         </connections>

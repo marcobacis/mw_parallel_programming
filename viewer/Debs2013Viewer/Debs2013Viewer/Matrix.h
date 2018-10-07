@@ -14,11 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithMatrix:(Matrix *)m;
 - (instancetype)initWithRows:(int)rows columns:(int)cols elements:(const double *)m;
-- (Matrix *)multiply:(Matrix *)b;
 
 @property (readonly) int rows;
 @property (readonly) int columns;
 @property (readonly) const double *elements;
+- (double *)row:(int)i;
+
+- (Matrix *)multiply:(Matrix *)b;
 
 + (Matrix *)translationOfX:(double)x y:(double)y z:(double)z;
 + (Matrix *)scalingByX:(double)x y:(double)y z:(double)z;

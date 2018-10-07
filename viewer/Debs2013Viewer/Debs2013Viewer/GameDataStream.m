@@ -54,7 +54,7 @@
           if (i == 3)
             obj.label = info[0];
           obj.color = color;
-          obj.size = 3.0;
+          obj.size = 4.0;
           obj.drawExtraRadius = YES;
           [sensorToDefaults setObject:obj forKey:@(n)];
         }
@@ -69,7 +69,7 @@
     for (NSString *balllist in ballsegment) {
       NSArray<NSString *> *balls = [balllist componentsSeparatedByString:@","];
       for (NSString *ball in balls) {
-        GameObject *obj = [[GameObject alloc] initWithColor:[NSColor magentaColor] size:5.0 label:@""];
+        GameObject *obj = [[GameObject alloc] initWithColor:[NSColor magentaColor] size:2.0 label:@""];
         [sensorToDefaults setObject:obj forKey:@([ball intValue])];
       }
     }

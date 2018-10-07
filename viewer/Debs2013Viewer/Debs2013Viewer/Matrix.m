@@ -74,6 +74,12 @@
 }
 
 
+- (double *)row:(int)i
+{
+  return _elements + (i * self.columns);
+}
+
+
 - (Matrix *)multiply:(Matrix *)b
 {
   if (self.columns != b.rows)
