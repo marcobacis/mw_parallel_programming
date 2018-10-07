@@ -35,7 +35,7 @@ void game::load_from_directory(const fs::path& basepath)
 
     //map interruptions, assuming they are in order start-end-start-end...
     for (unsigned int in = 0; in < game_events.size(); in += 2) {
-        interruptions.push_back({game_events[in].ts / SENSOR_SAMPLE_PERIOD, game_events[in+1].ts / SENSOR_SAMPLE_PERIOD});
+        interruptions.push_back({game_events[in].ts, game_events[in+1].ts});
     }
 }
 

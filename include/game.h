@@ -16,12 +16,9 @@
 #define START_SECOND  13086639146403495
 #define END_SECOND    14879639146403495
 
-#define      SENSOR_SAMPLE_PERIOD 5000000000  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
-#define BALL_SENSOR_SAMPLE_PERIOD  500000000  // 2 kHz
 
-
-typedef unsigned long int sensor_timestamp_t;
-const sensor_timestamp_t one_second = 1000000000000 / SENSOR_SAMPLE_PERIOD;
+const sensor_timestamp_t sensor_sample_period = 5000000000;  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
+const sensor_timestamp_t ball_sensor_sample_period = 500000000; // 2 kHz
 
 typedef unsigned int sensor_id_t;
 

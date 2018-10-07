@@ -17,7 +17,7 @@ sensor_record parse_sensor_record(std::string line)
 
     //ts
     std::getline(lineStream, cell, GAME_SEP);
-    result.ts = std::stoull(cell) / SENSOR_SAMPLE_PERIOD;
+    result.ts = std::stoull(cell);
 
     //x
     std::getline(lineStream, cell, GAME_SEP);
@@ -53,7 +53,6 @@ referee_event parse_referee_event(std::string line, unsigned long int base_ts)
     //trim + tolower
     cell.erase(remove_if(cell.begin(), cell.end(), isspace), cell.end());
     std::transform(cell.begin(), cell.end(), cell.begin(), ::tolower);
-
 
     if(cell.compare("gameinterruptionbegin") == 0) {
         event.type = INT_BEGIN;
@@ -132,7 +131,7 @@ void load_game_csv(fs::path file_path, std::vector<std::vector<sensor_record> > 
     while(std::getline(game_file, line)) {
         temp = parse_sensor_record(line);
 
-        if(temp.ts != game_step[0].ts) {
+        if((temp.ts / sensor_sample_period) != (game_step[0].ts / sensor_sample_period)) {
             game_vector.push_back(game_step);
             game_step.clear();
         }

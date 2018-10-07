@@ -48,7 +48,7 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
             tot_rec += step_players.size();
             tot_ball += step_balls.size();
 
-            double toAdd = ((double)(SENSOR_SAMPLE_PERIOD) / 1000000000000.0) / (double)(step_balls.size());
+            double toAdd = ((double)(sensor_sample_period) / (double)one_second) / (double)(step_balls.size());
 
             for(sensor_record *ball: step_balls) {
                 //get nearest sensor
@@ -157,7 +157,7 @@ int main(int argc, char **argv)
             for (unsigned int pe = 0; pe < poss_events.size(); pe += 2) {
                 player_possession += poss_events[pe + 1].ts - poss_events[pe].ts;
             }
-            player_possession /= 1000000000000;
+            player_possession /= one_second;
             total_possession += player_possession;
             total_actual += possession[pl];
 
@@ -166,19 +166,19 @@ int main(int argc, char **argv)
         }
     }
 
-    float tot = 0;
+    double tot = 0;
     for(unsigned int e = 1; e < g.game_events.size()-2;e += 2) {
         tot += (g.game_events[e+1].ts - g.game_events[e].ts);
     }
-    tot /= 1000000000000;
+    tot /= one_second;
 
-    float interr = 0;
+    double interr = 0;
     for(unsigned int e = 2; e < g.game_events.size()-2;e += 2) {
         interr += g.game_events[e+1].ts - g.game_events[e].ts;
     }
-    interr /= 1000000000000;
+    interr /= one_second;
 
-    float tot_time = (END_SECOND - START_FIRST) / 1000000000000;
+    double tot_time = (END_SECOND - START_FIRST) / one_second;
 
     DBOUT << "\n";
     DBOUT << "Effective game time " << tot << "\n";
