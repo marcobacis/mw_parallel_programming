@@ -146,10 +146,10 @@ int main(int argc, char **argv)
             filename.append(".csv");
 
             vector<referee_event> poss_events;
-            loadRefereeCSV(
+            load_referee_csv(
                     basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(filename),
                     poss_events, 0);
-            loadRefereeCSV(
+            load_referee_csv(
                     basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
                     poss_events, 0);
 

@@ -5,7 +5,7 @@
 #define PLAYER_SEP ','
 
 
-sensor_record parseSensorRecord(std::string line)
+sensor_record parse_sensor_record(std::string line)
 {
     sensor_record result;
     std::stringstream lineStream(line);
@@ -35,7 +35,7 @@ sensor_record parseSensorRecord(std::string line)
 }
 
 
-referee_event parseRefereeEvent(std::string line, unsigned long int base_ts)
+referee_event parse_referee_event(std::string line, unsigned long int base_ts)
 {
     std::stringstream lineStream(line);
 
@@ -74,7 +74,8 @@ referee_event parseRefereeEvent(std::string line, unsigned long int base_ts)
     return event;
 }
 
-player parsePlayer(std::string line)
+
+player parse_player(std::string line)
 {
     std::stringstream lineStream(line);
     std::string cell;
@@ -105,7 +106,8 @@ player parsePlayer(std::string line)
     return player_read;
 }
 
-void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector)
+
+void load_game_csv(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector)
 {
     std::ifstream game_file;
 
@@ -124,12 +126,11 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
     std::string line;
 
     std::getline(game_file, line);
-    sensor_record temp = parseSensorRecord(line);
+    sensor_record temp = parse_sensor_record(line);
     game_step.push_back(temp);
 
     while(std::getline(game_file, line)) {
-
-        temp = parseSensorRecord(line);
+        temp = parse_sensor_record(line);
 
         if(temp.ts != game_step[0].ts) {
             game_vector.push_back(game_step);
@@ -146,7 +147,7 @@ void loadGameCSV(fs::path file_path, std::vector<std::vector<sensor_record> > &g
 }
 
 
-void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vector,
+void load_referee_csv(fs::path file_path, std::vector<referee_event> &events_vector,
                     unsigned long int base_ts)
 {
     std::ifstream events_file;
@@ -160,14 +161,14 @@ void loadRefereeCSV(fs::path file_path, std::vector<referee_event> &events_vecto
     std::string line;
 
     while(std::getline(events_file, line)) {
-        events_vector.push_back(parseRefereeEvent(line, base_ts));
+        events_vector.push_back(parse_referee_event(line, base_ts));
     }
 
     events_file.close();
 }
 
 
-void loadPlayers(fs::path file_path, std::vector<player> &players)
+void load_players(fs::path file_path, std::vector<player> &players)
 {
     std::ifstream players_file;
 
@@ -180,11 +181,12 @@ void loadPlayers(fs::path file_path, std::vector<player> &players)
     std::string line;
 
     while(std::getline(players_file, line)) {
-        players.push_back(parsePlayer(line));
+        players.push_back(parse_player(line));
     }
 }
 
-void loadBalls(fs::path file_path, std::set<unsigned int>& balls)
+
+void load_balls(fs::path file_path, std::set<unsigned int>& balls)
 {
     std::ifstream balls_file;
 
