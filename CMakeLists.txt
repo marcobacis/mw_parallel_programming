@@ -2,8 +2,8 @@ cmake_minimum_required (VERSION 3.10)
 
 project(mw_parallel_programming)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -ggdb -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ggdb --std=c++0x -O3")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ggdb --std=c++11")
 
 # Directories
 set(INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
