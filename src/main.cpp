@@ -48,21 +48,21 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
             tot_rec += step_players.size();
             tot_ball += step_balls.size();
 
-            double toAdd = ((double)(SENSOR_SAMPLE_PERIOD) / 1000000000000.0) / (double)(step.balls.size());
+            double toAdd = ((double)(SENSOR_SAMPLE_PERIOD) / 1000000000000.0) / (double)(step_balls.size());
 
             for(sensor_record *ball: step_balls) {
                 //get nearest sensor
-                float mindist = std::numeric_limits<float>::infinity();
+                double mindist = std::numeric_limits<double>::infinity();
                 int nearid = 0;
                 for (sensor_record *rec: step_players) {
-                    float dist = distance(*ball, *rec);
+                    double dist = distance_on_ground(*ball, *rec);
                     if (dist < mindist) {
                         nearid = rec->sid;
                         mindist = dist;
                     }
                 }
 
-                if (mindist != std::numeric_limits<double>::infinity() && mindist < K * 1000) {
+                if (mindist != std::numeric_limits<double>::infinity() && mindist < (K * 1000)) {
                     double& this_possession = possession[g.sensorPlayerIdx[nearid]];
                     #pragma omp atomic
                     this_possession += toAdd;
