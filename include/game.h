@@ -9,16 +9,14 @@
 #include "utils.h"
 
 
-#define START_FIRST   10753295594424116
-#define END_FIRST     12557295594424116
-#define NO_BALL_START 12398000000000000
+const ps_timestamp_t sensor_sample_period = one_second / 200;
+const ps_timestamp_t ball_sensor_sample_period = one_second / 2000;
 
-#define START_SECOND  13086639146403495
-#define END_SECOND    14879639146403495
-
-
-const ps_timestamp_t sensor_sample_period = 5000000000;  // picoseconds// 1 sec / 200 Hz = 1e^12 ps / 200 = 5e^9 ps
-const ps_timestamp_t ball_sensor_sample_period = 500000000; // 2 kHz
+const ps_timestamp_t first_half_start = 10753295594424116;
+const ps_timestamp_t no_ball_start = 12398000000000000;
+const ps_timestamp_t first_half_end = 12557295594424116;
+const ps_timestamp_t second_half_start = 13086639146403495; // also no_ball_end
+const ps_timestamp_t second_half_end = 14879639146403495;
 
 
 typedef unsigned int sensor_id_t;
@@ -44,6 +42,7 @@ struct sensor_record {
     }
 };
 
+
 /**
  * Referral event (goal, interruption begin/end) record structure
  */
@@ -61,8 +60,8 @@ struct referee_event {
 
 
 struct interruption {
-    ps_timestamp_t start;   // in sensor units
-    ps_timestamp_t end;     // in sensor units
+    ps_timestamp_t start;
+    ps_timestamp_t end;
 };
 
 

@@ -178,7 +178,7 @@ int main(int argc, char **argv)
     }
     interr /= one_second;
 
-    double tot_time = (END_SECOND - START_FIRST) / one_second;
+    double tot_time = (second_half_end - first_half_start) / one_second;
 
     DBOUT << "\n";
     DBOUT << "Effective game time " << tot << "\n";

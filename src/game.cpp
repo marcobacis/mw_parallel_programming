@@ -1,4 +1,3 @@
-#include <climits>
 #include "game.h"
 #include "gameio.h"
 
@@ -12,15 +11,15 @@ void game::load_from_directory(const fs::path& basepath)
     load_game_csv(basepath / fs::path("full-game.csv"), game_records);
 
     game_events.push_back({2010, referee_event::type::INT_BEGIN, 0, 0});
-    game_events.push_back({2011, referee_event::type::INT_END, START_FIRST, 0});
-    load_referee_csv(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, START_FIRST);
+    game_events.push_back({2011, referee_event::type::INT_END, first_half_start, 0});
+    load_referee_csv(basepath / fs::path("referee-events/interruptions/1stHalf.csv"), game_events, first_half_start);
     //add interruption between games + no ball time
-    game_events.push_back({2010, referee_event::type::INT_BEGIN, NO_BALL_START, 35});
-    game_events.push_back({2011, referee_event::type::INT_END, START_SECOND, 35});
-    load_referee_csv(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, START_SECOND);
+    game_events.push_back({2010, referee_event::type::INT_BEGIN, no_ball_start, 35});
+    game_events.push_back({2011, referee_event::type::INT_END, second_half_start, 35});
+    load_referee_csv(basepath / fs::path("referee-events/interruptions/2ndHalf.csv"), game_events, second_half_start);
     //add end game interruption
-    game_events.push_back({6014, referee_event::type::INT_BEGIN, END_SECOND, 39});
-    game_events.push_back({6015, referee_event::type::INT_END, ULONG_MAX, 39});
+    game_events.push_back({6014, referee_event::type::INT_BEGIN, second_half_end, 39});
+    game_events.push_back({6015, referee_event::type::INT_END, timestamp_max, 39});
 
     load_players(basepath / fs::path("players.csv"), players);
     load_balls(basepath / fs::path("balls.csv"), balls);
