@@ -7,6 +7,7 @@
 #include <map>
 #include <cmath>
 #include "utils.h"
+#include "referee.h"
 
 
 const ps_timestamp_t sensor_sample_period = one_second / 200;
@@ -43,34 +44,18 @@ struct sensor_record {
 };
 
 
-/**
- * Referral event (goal, interruption begin/end) record structure
- */
-struct referee_event {
-    enum type { 
-        INT_BEGIN,
-        INT_END, 
-        OTHER
-    };
-    unsigned int id;
-    type type;
-    ps_timestamp_t ts;    //in picoseconds
-    unsigned int counter;     //different for each unique event name
-};
-
-
-struct interruption {
-    ps_timestamp_t start;
-    ps_timestamp_t end;
-};
-
-
 struct player {
     std::string name;                   /// Player name+surname
     char role;                          /// Role -> P = Player, G = Goalkeeper, R = Referee
     char team;                          /// Either A,B or "" for the referee
     std::vector<sensor_id_t> sensors;  /// 2 sensors ids for player, 4 for the goalkeeper
     player(): sensors(4) {}
+};
+
+
+struct interruption {
+    ps_timestamp_t start;
+    ps_timestamp_t end;
 };
 
 

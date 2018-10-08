@@ -11,16 +11,23 @@
 #include <locale>
 #include <set>
 #include "utils.h"
-#include "game.h"
 
 
 /**
- * Parses and return a event record from a string
- * @param line      Input event record line
- * @param base_ts   Base timestamp from which to start (used when reading 2nd half of the match)
- * @return          the parsed event
+ * Referral event (goal, interruption begin/end) record structure
  */
-referee_event parse_referee_event(std::string line, unsigned long int base_ts);
+struct referee_event {
+    enum type { 
+        INT_BEGIN,
+        INT_END, 
+        OTHER
+    };
+    unsigned int id;
+    type type;
+    ps_timestamp_t ts;
+    unsigned int counter;     //different for each unique event name
+};
+
 
 /**
  * Loads a referee events csv file into a vector of events
@@ -31,5 +38,6 @@ referee_event parse_referee_event(std::string line, unsigned long int base_ts);
  */
 void load_referee_csv(std::string file_path, std::vector<referee_event> &events_vector,
                      unsigned long int base_ts = 0);
+
 
 #endif //MW_PARALLEL_PROGRAMMING_IO_H

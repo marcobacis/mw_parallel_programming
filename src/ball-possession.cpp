@@ -17,7 +17,7 @@
 #include <climits>
 #include "utils.h"
 #include "game.h"
-#include "gameio.h"
+#include "referee.h"
 
 
 using namespace std;

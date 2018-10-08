@@ -1,5 +1,4 @@
 #include "game.h"
-#include "gameio.h"
 
 using namespace std;
 

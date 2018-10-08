@@ -1,4 +1,4 @@
-#include "gameio.h"
+#include "referee.h"
 
 #define EVENT_SEP ';'
 
