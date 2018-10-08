@@ -1,7 +1,3 @@
-/*
- * Utility methods
- */
-
 #include "utils.h"
 
 

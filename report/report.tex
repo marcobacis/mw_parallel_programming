@@ -45,7 +45,7 @@ In this case, given that the slowest sensor has a 200Hz rate, the timestep-based
 This is done while loading the game records file.
 
 
-The ball sensor outputs data at 2kHz, so for each timestep group there are at least 10 ball records (usually more, as many ball sensors are on at the same time, even if just one ball is used).
+The ball sensor outputs data at 2kHz, so for each timestep group there are about 10 ball records (usually more, as many ball sensors are on at the same time, even if just one ball is used).
 To compute the ball possession, for each group the nearest player is found for each of the current ball's positions, and the timestep (5ms) is distributed among those distinct positions.
 The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
 

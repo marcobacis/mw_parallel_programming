@@ -1,9 +1,8 @@
-/**
- * Middleware Technologies course
- * Parallel Programming project
+/** @file
+ * @brief Main application source file, contains the main
  *
- *
- * Authors: Marco Bacis, Daniele Cattaneo
+ * @author Marco Bacis
+ * @author Daniele Cattaneo
  */
 
 #include <iostream>
@@ -22,7 +21,15 @@
 
 using namespace std;
 
-
+/** Computes and accumulates the ball possession for the given record range
+ * @param g         Game from which to compute the possession
+ * @param K         Maximum distance to define possession
+ * @param i_start   Initial record index to consider
+ * @param i_end     Last record index to consider
+ * @param tot_ball  Total number of ball records found (updated by the method)
+ * @param tot_rec   Total number of player sensor records found (updated by the method)
+ * @param possession List of all players possessions (updated by the method)
+ */
 void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball, int& tot_rec, vector<double>& possession)
 {
     #pragma omp parallel for reduction(+:tot_ball, tot_rec)
@@ -72,7 +79,10 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
     }
 }
 
-
+/** Prints the current partial possession for each player and team
+ * @param g             The game state
+ * @param possession    Partial cumulative possessions
+ */
 void print_possession(game& g, vector<double>& possession)
 {
     int teams[2] = {0, 0};
@@ -90,7 +100,11 @@ void print_possession(game& g, vector<double>& possession)
     cout << "team possession: A = " << teams[0] << " , B = " << teams[1] << endl;
 }
 
-
+/** Prints the final possession and game statistics
+ * @param basepath  Base path from which to take the expected possession results
+ * @param g         The game state
+ * @param possession Final total possessions list
+ */
 void print_final_stats(const string& basepath, game& g, vector<double>& possession)
 {
 

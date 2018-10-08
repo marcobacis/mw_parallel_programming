@@ -1,6 +1,8 @@
-//
-// Created by Marco Bacis on 23/07/18.
-//
+/** @file
+ * @brief Utlity functions
+ *
+ * @author Marco Bacis
+ * @author Daniele Cattaneo */
 
 #ifndef MW_PARALLEL_PROGRAMMING_UTILS_H
 #define MW_PARALLEL_PROGRAMMING_UTILS_H
@@ -19,13 +21,12 @@
 #define DBOUT 0 && std::cout
 #endif
 
-typedef unsigned long int ps_timestamp_t;
-const ps_timestamp_t one_second = 1000000000000;
-const ps_timestamp_t timestamp_max = ULONG_MAX;
+typedef unsigned long int ps_timestamp_t;           //!< Timestamp data type
+const ps_timestamp_t one_second = 1000000000000;    //!< One second in picoseconds (1s = 10^12 ps)
+const ps_timestamp_t timestamp_max = ULONG_MAX;     //!< Maximum timestamp available
 
 
-/**
- * Parses a string in the hh:mm:ss.sss format and returns
+/** Parses a string in the hh:mm:ss.sss format and returns
  * its value in picoseconds from 00:00:00.000.
  * @param field The string representing the datetime to parse
  * @return The datetime timestamp in picoseconds
