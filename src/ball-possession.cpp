@@ -75,16 +75,28 @@ void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball
 
 void print_possession(game& g, vector<double>& possession)
 {
+    int teams[2] = {0, 0};
     for (unsigned int pl=0; pl<possession.size(); pl++) {
         if (pl == g.referee_idx)
             continue;
         cout << "player " << g.players[pl].name << ", possession = " << possession[pl] << endl;
+
+        int team = 0;
+        if(g.players[pl].team == 'B') team = 1;
+
+        teams[team] += possession[pl];
     }
+
+    cout << "team possession: A = " << teams[0] << " , B = " << teams[1] << endl;
 }
 
 
 void print_final_stats(const string& basepath, game& g, vector<double>& possession)
 {
+
+    int teams_exp[2] = {0, 0};
+    int teams_act[2] = {0, 0};
+
     double total_possession = 0;
     double total_actual = 0;
     for(unsigned int pl = 0; pl < g.players.size(); pl++) {
@@ -109,10 +121,20 @@ void print_final_stats(const string& basepath, game& g, vector<double>& possessi
             total_possession += player_possession;
             total_actual += possession[pl];
 
+            int team = 0;
+            if(g.players[pl].team == 'B') team = 1;
+
+            teams_exp[team] += player_possession;
+            teams_act[team] += possession[pl];
+
             cout << "player " << g.players[pl].name << ", possession = " << possession[pl] << 
                 " (referee = " << player_possession << ")" << endl;
+
         }
     }
+
+    cout << "team A, possession " << teams_act[0] << " (referee = " << teams_exp[0] << ")" << endl;
+    cout << "team B, possession " << teams_act[1] << " (referee = " << teams_exp[1] << ")" << endl;
 
     double tot = 0;
     for(unsigned int e = 1; e < g.game_events.size()-2;e += 2) {
