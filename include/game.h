@@ -84,7 +84,7 @@ public:
     std::map<sensor_id_t, unsigned int> sensorPlayerIdx;
     unsigned int referee_idx = 0;
 
-    void load_from_directory(const fs::path& basepath);
+    void load_from_directory(const std::string& basepath);
 
     bool is_interrupted_at_time(ps_timestamp_t ts) const
     {

@@ -47,4 +47,4 @@ endif()
 add_executable(ball-possession ${SOURCES})
 include_directories(${INCLUDE_DIR})
 
-target_link_libraries(ball-possession OpenMP::OpenMP_CXX stdc++fs)
+target_link_libraries(ball-possession OpenMP::OpenMP_CXX)

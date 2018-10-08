@@ -8,7 +8,6 @@
 
 #include <iostream>
 #include <algorithm>
-#include <experimental/filesystem>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -84,7 +83,7 @@ void print_possession(game& g, vector<double>& possession)
 }
 
 
-void print_final_stats(const fs::path& basepath, game& g, vector<double>& possession)
+void print_final_stats(const string& basepath, game& g, vector<double>& possession)
 {
     double total_possession = 0;
     double total_actual = 0;
@@ -96,10 +95,10 @@ void print_final_stats(const fs::path& basepath, game& g, vector<double>& posses
 
             vector<referee_event> poss_events;
             load_referee_csv(
-                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(filename),
+                    basepath + "referee-events/ball_possession/1stHalf/" + filename,
                     poss_events, 0);
             load_referee_csv(
-                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
+                    basepath + "referee-events/ball_possession/2ndHalf/" + filename,
                     poss_events, 0);
 
             double player_possession = 0;
@@ -147,7 +146,7 @@ int main(int argc, char **argv)
     double K = stof(argv[1]);
     double T = stof(argv[2]);
 
-    fs::path basepath(argv[3]);
+    string basepath(argv[3]);
 
     if(K < 1 || K > 5 || T < 1 || T > 60) {
         cerr << "K must be between 1 and 5" << endl << "T must be between 1 and 60" << endl;

@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <iostream>
-#include <experimental/filesystem>
 #include <string>
 #include <sstream>
 #include <fstream>
@@ -42,7 +41,7 @@ player parse_player(std::string line);
  * @param file_path     Full game file path
  * @param game_vector   Vector to fill
  */
-void load_game_csv(std::experimental::filesystem::path file_path, std::vector<std::vector<sensor_record> > &game_vector);
+void load_game_csv(std::string file_path, std::vector<std::vector<sensor_record> > &game_vector);
 
 /**
  * Loads a referee events csv file into a vector of events
@@ -51,7 +50,7 @@ void load_game_csv(std::experimental::filesystem::path file_path, std::vector<st
  * @param base_ts       Base timestamp from which to start (used to load 2nd half)
  * @param append        Whether to append the read events or not to the vector
  */
-void load_referee_csv(std::experimental::filesystem::path file_path, std::vector<referee_event> &events_vector,
+void load_referee_csv(std::string file_path, std::vector<referee_event> &events_vector,
                      unsigned long int base_ts = 0);
 
 
@@ -60,7 +59,7 @@ void load_referee_csv(std::experimental::filesystem::path file_path, std::vector
  * @param file_path The players' file path
  * @param players  The vector in which to store the players
  */
-void load_players(std::experimental::filesystem::path file_path, std::vector<player> &players);
+void load_players(std::string file_path, std::vector<player> &players);
 
 
 /**
@@ -68,6 +67,6 @@ void load_players(std::experimental::filesystem::path file_path, std::vector<pla
  * @param file_path Balls' file path
  * @param balls the loaded balls
  */
-void load_balls(fs::path file_path, std::set<unsigned int>& balls);
+void load_balls(std::string file_path, std::set<unsigned int>& balls);
 
 #endif //MW_PARALLEL_PROGRAMMING_IO_H

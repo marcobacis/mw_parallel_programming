@@ -104,7 +104,7 @@ player parse_player(std::string line)
 }
 
 
-void load_game_csv(fs::path file_path, std::vector<std::vector<sensor_record> > &game_vector)
+void load_game_csv(std::string file_path, std::vector<std::vector<sensor_record> > &game_vector)
 {
     std::ifstream game_file;
 
@@ -113,7 +113,7 @@ void load_game_csv(fs::path file_path, std::vector<std::vector<sensor_record> > 
     game_file.open(file_path);
 
     if (!game_file.is_open()) {
-        throw std::runtime_error("Game file not found: " + file_path.string());
+        throw std::runtime_error("Game file not found: " + file_path);
     }
 
     game_file.clear();
@@ -144,7 +144,7 @@ void load_game_csv(fs::path file_path, std::vector<std::vector<sensor_record> > 
 }
 
 
-void load_referee_csv(fs::path file_path, std::vector<referee_event> &events_vector,
+void load_referee_csv(std::string file_path, std::vector<referee_event> &events_vector,
                     unsigned long int base_ts)
 {
     std::ifstream events_file;
@@ -152,7 +152,7 @@ void load_referee_csv(fs::path file_path, std::vector<referee_event> &events_vec
     events_file.open(file_path);
 
     if (!events_file.is_open()) {
-        throw std::runtime_error("Events file not found: " + file_path.string());
+        throw std::runtime_error("Events file not found: " + file_path);
     }
 
     std::string line;
@@ -165,14 +165,14 @@ void load_referee_csv(fs::path file_path, std::vector<referee_event> &events_vec
 }
 
 
-void load_players(fs::path file_path, std::vector<player> &players)
+void load_players(std::string file_path, std::vector<player> &players)
 {
     std::ifstream players_file;
 
     players_file.open(file_path);
 
     if (!players_file.is_open()) {
-        throw std::runtime_error("Players file not found: " + file_path.string());
+        throw std::runtime_error("Players file not found: " + file_path);
     }
 
     std::string line;
@@ -183,14 +183,14 @@ void load_players(fs::path file_path, std::vector<player> &players)
 }
 
 
-void load_balls(fs::path file_path, std::set<unsigned int>& balls)
+void load_balls(std::string file_path, std::set<unsigned int>& balls)
 {
     std::ifstream balls_file;
 
     balls_file.open(file_path);
 
     if(!balls_file.is_open()) {
-        throw new std::runtime_error("Balls file not found: " + file_path.string());
+        throw new std::runtime_error("Balls file not found: " + file_path);
     }
 
     for(int i = 0; i < 2; i++) {

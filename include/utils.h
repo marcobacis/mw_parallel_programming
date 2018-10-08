@@ -9,7 +9,6 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
-#include <experimental/filesystem>
 #include <climits>
 
 #define _DEBUG 1
@@ -19,10 +18,6 @@
 #else
 #define DBOUT 0 && std::cout
 #endif
-
-//! Filesystem namespace shortcut
-namespace fs = std::experimental::filesystem;
-
 
 typedef unsigned long int ps_timestamp_t;
 const ps_timestamp_t one_second = 1000000000000;
