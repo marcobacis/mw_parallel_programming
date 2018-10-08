@@ -79,8 +79,61 @@ void print_possession(game& g, vector<double>& possession)
     for (unsigned int pl=0; pl<possession.size(); pl++) {
         if (pl == g.referee_idx)
             continue;
-        DBOUT << "player " << g.players[pl].name << ", possession = " << possession[pl] << endl;
+        cout << "player " << g.players[pl].name << ", possession = " << possession[pl] << endl;
     }
+}
+
+
+void print_final_stats(const fs::path& basepath, game& g, vector<double>& possession)
+{
+    double total_possession = 0;
+    double total_actual = 0;
+    for(unsigned int pl = 0; pl < g.players.size(); pl++) {
+        if(pl != g.referee_idx) {
+            string filename = g.players[pl].name;
+            std::replace(filename.begin(), filename.end(), ' ', '_');
+            filename.append(".csv");
+
+            vector<referee_event> poss_events;
+            load_referee_csv(
+                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(filename),
+                    poss_events, 0);
+            load_referee_csv(
+                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
+                    poss_events, 0);
+
+            double player_possession = 0;
+            for (unsigned int pe = 0; pe < poss_events.size(); pe += 2) {
+                player_possession += poss_events[pe + 1].ts - poss_events[pe].ts;
+            }
+            player_possession /= one_second;
+            total_possession += player_possession;
+            total_actual += possession[pl];
+
+            cout << "player " << g.players[pl].name << ", possession = " << possession[pl] << 
+                " (referee = " << player_possession << ")" << endl;
+        }
+    }
+
+    double tot = 0;
+    for(unsigned int e = 1; e < g.game_events.size()-2;e += 2) {
+        tot += (g.game_events[e+1].ts - g.game_events[e].ts);
+    }
+    tot /= one_second;
+
+    double interr = 0;
+    for(unsigned int e = 2; e < g.game_events.size()-2;e += 2) {
+        interr += g.game_events[e+1].ts - g.game_events[e].ts;
+    }
+    interr /= one_second;
+
+    double tot_time = (second_half_end - first_half_start) / one_second;
+
+    DBOUT << "\n";
+    DBOUT << "Effective game time " << tot << "\n";
+    DBOUT << "Possession real: " << total_possession << " actual " << total_actual << "\n";
+    DBOUT << "Interruptions " << interr << "\n";
+    DBOUT << "Total time (included interruptions) " << tot_time << " seconds\n";
 }
 
 
@@ -106,8 +159,6 @@ int main(int argc, char **argv)
     
     vector<double> possession(g.players.size(), 0);
 
-    //HERE GOES ALGORITHM
-
     int tot_ball = 0;
     int tot_rec = 0;
 
@@ -126,9 +177,9 @@ int main(int argc, char **argv)
         interval_end_time = step[0].ts;
         if (interval_end_time - interval_start_time > T * one_second) {
             accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
-            DBOUT << "possession at time " << interval_end_time / one_second << " s" << endl;
+            cout << "possession at time " << interval_end_time / one_second << " s" << endl;
             print_possession(g, possession);
-            DBOUT << endl;
+            cout << endl;
             interval_start = interval_end;
             interval_start_time = interval_end_time;
         }
@@ -136,54 +187,8 @@ int main(int argc, char **argv)
     
     accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
 
-    DBOUT << "final possession stats: " << endl;
-    double total_possession = 0;
-    double total_actual = 0;
-    for(unsigned int pl = 0; pl < g.players.size(); pl++) {
-        if(pl != g.referee_idx) {
-            string filename = g.players[pl].name;
-            std::replace(filename.begin(), filename.end(), ' ', '_');
-            filename.append(".csv");
+    cout << "final possession stats: " << endl;
+    print_final_stats(basepath, g, possession);
 
-            vector<referee_event> poss_events;
-            load_referee_csv(
-                    basepath / fs::path("referee-events/ball_possession/1stHalf/") / fs::path(filename),
-                    poss_events, 0);
-            load_referee_csv(
-                    basepath / fs::path("referee-events/ball_possession/2ndHalf/") / fs::path(filename),
-                    poss_events, 0);
-
-            double player_possession = 0;
-            for (unsigned int pe = 0; pe < poss_events.size(); pe += 2) {
-                player_possession += poss_events[pe + 1].ts - poss_events[pe].ts;
-            }
-            player_possession /= one_second;
-            total_possession += player_possession;
-            total_actual += possession[pl];
-
-            cout << g.players[pl].name << " expected " << player_possession << ", got " << possession[pl]
-                 << endl;
-        }
-    }
-
-    double tot = 0;
-    for(unsigned int e = 1; e < g.game_events.size()-2;e += 2) {
-        tot += (g.game_events[e+1].ts - g.game_events[e].ts);
-    }
-    tot /= one_second;
-
-    double interr = 0;
-    for(unsigned int e = 2; e < g.game_events.size()-2;e += 2) {
-        interr += g.game_events[e+1].ts - g.game_events[e].ts;
-    }
-    interr /= one_second;
-
-    double tot_time = (second_half_end - first_half_start) / one_second;
-
-    DBOUT << "\n";
-    DBOUT << "Effective game time " << tot << "\n";
-    DBOUT << "Possession real: " << total_possession << " actual " << total_actual << "\n";
-    DBOUT << "Interruptions " << interr << "\n";
-    DBOUT << "Total time (included interruptions) " << tot_time << " seconds\n";
     DBOUT << "Total player records " << tot_rec << ", total ball records " << tot_ball << "\n\n";
 }

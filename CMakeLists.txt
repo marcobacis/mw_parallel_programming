@@ -44,7 +44,7 @@ if(NOT TARGET OpenMP::OpenMP_CXX)
 endif()
 
 # Main executable
-add_executable(main ${SOURCES})
+add_executable(ball-possession ${SOURCES})
 include_directories(${INCLUDE_DIR})
 
-target_link_libraries(main OpenMP::OpenMP_CXX stdc++fs)
+target_link_libraries(ball-possession OpenMP::OpenMP_CXX stdc++fs)
