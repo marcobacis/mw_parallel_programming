@@ -29,7 +29,8 @@ A player is considered in possession of the ball when
 
 \subsection*{Additional Informations}
 \begin{itemize}
-    \item As found from the DEBS2013 challenge, the field is half the dimension of a standard soccer field (66 x 52 meters)
+    \item Arm/shoe attached sensors sends data at 200Hz, while the ball has a 2kHz rate
+    \item As found from the DEBS2013 challenge paper, the field is half the dimension of a standard soccer field (66 x 52 meters)
     \item Each player (and even the referee) has 2 sensors, one for each arm. The goalkeeper has 4 sensors (1 more for each arm)
     \item The data from the sensors starts before the game begins and stops after the game ends, including the time between the two halves
     \item There is no sensor data during the last 2.5 minutes before the first half ends
@@ -38,33 +39,56 @@ A player is considered in possession of the ball when
 
 \section*{Implementation}
 
-\begin{algorithm}[H]
+In order to compute the ball possessions, the algorithm must divide the sensor data into a set of {\bf time-steps} based on the sensor's data rate.
+After that, for each timestep the nearest player can be found and its possession time updated.
+In this case, given that the slowest sensor has a 200Hz rate, the timestep-based grouping of the records is done by dividing each record's timestamp (in picoseconds) by $1 / 200 = 0.005s = 5\,000\,000\,000ps$.
+This is done while loading the game records file.
+
+
+The ball sensor outputs data at 2kHz, so for each timestep group there are at least 10 ball records (usually more, as many ball sensors are on at the same time, even if just one ball is used).
+To compute the ball possession, for each group the nearest player is found for each of the current ball's positions, and the timestep (5ms) is distributed among those distinct positions.
+The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
+
+\begin{algorithm}[tb]
     \SetKwInOut{Input}{input}
     \SetKwInOut{Output}{output}
 
-    \Input{Full Game sensor records, game interruptions, K, T}
+    \Input{Full game sensor records, game interruptions, K, T}
     \Output{Cumulated possession results every T seconds}
     \BlankLine
     \ForEach{game step $s$ in the game records vector}{
         \If{game is not interrupted at time $s.timestep$}{
-            $B \longleftarrow \emptyset$ \\
-            $P \longleftarrow \emptyset$ \\
+            $B \longleftarrow \emptyset$\;
+            $P \longleftarrow \emptyset$\;
             \tcp{First loop, to gather just the balls records}
             \ForEach{record $r \in s$} {
                 \uIf{$r$ is a ball {\bf and} $r$ is inside the field}{
-                    $B \longleftarrow B \cup r$ \\
+                    $B \longleftarrow B \cup r$\;
                 }
                 \uElseIf{$r$ is a player}{
-                    $P \longleftarrow P \cup r$ \\
+                    $P \longleftarrow P \cup r$\;
                 }
             }
             \tcp{Second loop to compute the actual possession}
+            $increment \longleftarrow 5ms / B.size$\;
             \ForEach{ball record $b \in B$}{
-                get nearest player sensor \;
+                $minDist \longleftarrow INT\_MAX$\;
+                $minPlayer \longleftarrow \emptyset$\;
+                \ForEach{player record $p \in P$}{
+                    $dist \longleftarrow p.x^2 + p.y^2$ \tcc*[r]{ground distance}
+                    \If{$dist < minDist$}{
+                        $minDist \longleftarrow dist$\;
+                        $minPlayer \longleftarrow p$\;
+                    }
+                }
+                \If{$minDist < K$}{
+                    $possession[minPlayer] \longleftarrow increment$
+                }
             }
         }
     }
     \caption{Main algorithm for ball possession computation}
+    \label{algorithm:main_loops}
 \end{algorithm}
 
 
