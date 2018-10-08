@@ -1,0 +1,71 @@
+\documentclass[a4paper, 10pt]{article}
+\usepackage{comment} % enables the use of multi-line comments (\ifx \fi) 
+\usepackage{lipsum} %This package just generates Lorem Ipsum filler text. 
+\usepackage{fullpage} % changes the margin
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[]{algorithm2e}
+
+\begin{document}
+%Header-Make sure you update this information!!!!
+\noindent
+\large\textbf{Middleware Project - MPI/OpenMP} \hfill \textbf{Marco Bacis} 873199 \\
+Prof. Guinea \hfill \textbf{Daniele Cattaneo} 874757 \\
+Prof. Mottola
+
+\section*{Problem Statement}
+The goal of the project is to develop a system to provide analytics over high velocity sensor data originating from a soccer game.
+The goal of the analysis is to report and update the ball possession time for each player and team periodically during the game.
+The data used comes from the DEBS2013 challenge, in which a number of wireless sensors embedded in the shoes and a ball were used during a soccer match, spanning the whole duration of the game
+The main requirements is to use OpenMP and/or MPI to compute the real-time statistics.
+
+\subsection*{Ball possession conditions}
+A player is considered in possession of the ball when
+\begin{itemize}
+\item He is the player closest to the ball
+\item He is not farther than K meters from the ball
+\item Ball possession is undefined whenever the game was paused
+\end{itemize}
+
+\subsection*{Additional Informations}
+\begin{itemize}
+    \item As found from the DEBS2013 challenge, the field is half the dimension of a standard soccer field (66 x 52 meters)
+    \item Each player (and even the referee) has 2 sensors, one for each arm. The goalkeeper has 4 sensors (1 more for each arm)
+    \item The data from the sensors starts before the game begins and stops after the game ends, including the time between the two halves
+    \item There is no sensor data during the last 2.5 minutes before the first half ends
+    \item 4 balls are used during the game, but only the one inside the field is used for the possession computation
+\end{itemize}
+
+\section*{Implementation}
+
+\begin{algorithm}[H]
+    \SetKwInOut{Input}{input}
+    \SetKwInOut{Output}{output}
+
+    \Input{Full Game sensor records, game interruptions, K, T}
+    \Output{Cumulated possession results every T seconds}
+    \BlankLine
+    \ForEach{game step $s$ in the game records vector}{
+        \If{game is not interrupted at time $s.timestep$}{
+            $B \longleftarrow \emptyset$ \\
+            $P \longleftarrow \emptyset$ \\
+            \tcp{First loop, to gather just the balls records}
+            \ForEach{record $r \in s$} {
+                \uIf{$r$ is a ball {\bf and} $r$ is inside the field}{
+                    $B \longleftarrow B \cup r$ \\
+                }
+                \uElseIf{$r$ is a player}{
+                    $P \longleftarrow P \cup r$ \\
+                }
+            }
+            \tcp{Second loop to compute the actual possession}
+            \ForEach{ball record $b \in B$}{
+                get nearest player sensor \;
+            }
+        }
+    }
+    \caption{Main algorithm for ball possession computation}
+\end{algorithm}
+
+
+\end{document}
