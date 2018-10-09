@@ -1,8 +1,10 @@
-/** @file
+/** 
+ * @file
  * @brief Referee events data structure and loading method
  *
  * @author Marco Bacis
- * @author Daniele Cattaneo */
+ * @author Daniele Cattaneo 
+ */
 
 #ifndef MW_PARALLEL_PROGRAMMING_IO_H
 #define MW_PARALLEL_PROGRAMMING_IO_H
@@ -34,7 +36,8 @@ struct referee_event {
 };
 
 
-/** Loads a referee events csv file into a vector of events
+/** 
+ * Loads a referee events csv file into a vector of events
  * @param file_path     Events csv file path
  * @param events_vector Vector to fill
  * @param base_ts       Base timestamp from which to start (used to load 2nd half)

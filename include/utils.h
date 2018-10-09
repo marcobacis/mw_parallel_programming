@@ -1,8 +1,10 @@
-/** @file
+/** 
+ * @file
  * @brief Utlity functions
  *
  * @author Marco Bacis
- * @author Daniele Cattaneo */
+ * @author Daniele Cattaneo 
+ */
 
 #ifndef MW_PARALLEL_PROGRAMMING_UTILS_H
 #define MW_PARALLEL_PROGRAMMING_UTILS_H

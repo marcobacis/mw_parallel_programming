@@ -1,4 +1,5 @@
-/** @file
+/** 
+ * @file
  * @brief Main application source file, contains the main
  *
  * @author Marco Bacis
@@ -22,7 +23,8 @@
 
 using namespace std;
 
-/** Computes and accumulates the ball possession for a record
+/** 
+ * Computes and accumulates the ball possession for a record
  * @param g          Game from which to compute the possession
  * @param K          Maximum distance to define possession
  * @param i          Record index to consider
@@ -76,7 +78,8 @@ inline void accum_ball_possession(game& g, int K, int i, int& ball, int& rec, ve
     }
 }
 
-/** Prints the current partial possession for each player and team
+/** 
+ * Prints the current partial possession for each player and team
  * @param g             The game state
  * @param possession    Partial cumulative possessions
  */
@@ -97,7 +100,8 @@ void print_possession(game& g, vector<double>& possession)
     cout << "team possession: A = " << teams[0] << " , B = " << teams[1] << endl;
 }
 
-/** Prints the final possession and game statistics
+/** 
+ * Prints the final possession and game statistics
  * @param basepath  Base path from which to take the expected possession results
  * @param g         The game state
  * @param possession Final total possessions list

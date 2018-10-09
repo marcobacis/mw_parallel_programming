@@ -1,3 +1,11 @@
+/** 
+ * @file
+ * @brief Implementation of utlity functions
+ *
+ * @author Marco Bacis
+ * @author Daniele Cattaneo 
+ */
+
 #include "utils.h"
 
 

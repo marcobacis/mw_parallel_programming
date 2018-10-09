@@ -1,8 +1,10 @@
-/** @file
+/** 
+ * @file
  * @brief Game class methods and local functions
  *
  * @author Marco Bacis
- * @author Daniele Cattaneo */
+ * @author Daniele Cattaneo 
+ */
 
 #include "game.h"
 
@@ -15,7 +17,8 @@ using namespace std;
 const unsigned int read_chunk_size = 100000;
 
 
-/** Parses and return a sensor record from a string
+/** 
+ * Parses and return a sensor record from a string
  * @param line      Input sensor record line
  * @return          the parsed sensor record
  */
@@ -49,7 +52,8 @@ sensor_record parse_sensor_record(std::string line)
 }
 
 
-/** Parses and return a player record from a string
+/** 
+ * Parses and return a player record from a string
  * @param line      Player record string
  * @return          the parsed player record
  */
@@ -85,7 +89,8 @@ player parse_player(std::string line)
 }
 
 
-/** Loads the game sensors csv file into a vector of sensor records
+/** 
+ * Loads the game sensors csv file into a vector of sensor records
  * @param file_path     Full game file path
  * @param game_vector   Vector to fill
  */
@@ -145,7 +150,8 @@ void load_game_csv(string file_path, std::vector<std::vector<sensor_record> > &g
 }
 
 
-/** Loads the players from the given file
+/** 
+ * Loads the players from the given file
  * @param file_path The players' file path
  * @param players  The vector in which to store the players
  */
@@ -167,7 +173,8 @@ void load_players(string file_path, std::vector<player> &players)
 }
 
 
-/** Loads the balls in the sets (one set for each half)
+/** 
+ * Loads the balls in the sets (one set for each half)
  * @param file_path Balls' file path
  * @param balls the loaded balls
  */

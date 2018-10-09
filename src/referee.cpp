@@ -1,14 +1,17 @@
-/** @file
+/** 
+ * @file
  * Referee events class methods and local functions
  *
  * @author Marco Bacis
- * @author Daniele Cattaneo */
+ * @author Daniele Cattaneo
+ */
 
 #include "referee.h"
 
 #define EVENT_SEP ';'
 
-/** Parses a single referee event record
+/** 
+ * Parses a single referee event record
  * @param line      The referee event string
  * @param base_ts   Base timestamp from which to start counting
  * @return          The parsed event
