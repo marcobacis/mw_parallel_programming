@@ -12,6 +12,8 @@ using namespace std;
 #define GAME_SEP ','
 #define PLAYER_SEP ','
 
+const unsigned int read_chunk_size = 100000;
+
 
 /** Parses and return a sensor record from a string
  * @param line      Input sensor record line
@@ -103,24 +105,40 @@ void load_game_csv(string file_path, std::vector<std::vector<sensor_record> > &g
     game_file.seekg(0);
 
     std::vector<sensor_record> game_step;
-    std::string line;
+    std::vector<std::string> *lines_producer = new std::vector<std::string>();
+    std::vector<std::string> *lines_consumer = new std::vector<std::string>();
 
-    std::getline(game_file, line);
-    sensor_record temp = parse_sensor_record(line);
-    game_step.push_back(temp);
-
-    while(std::getline(game_file, line)) {
-        temp = parse_sensor_record(line);
-
-        if((temp.ts / sensor_sample_period) != (game_step[0].ts / sensor_sample_period)) {
-            game_vector.push_back(game_step);
-            game_step.clear();
+    do {
+        #pragma omp parallel sections
+        {
+            #pragma omp section
+            {
+                lines_producer->clear();
+                std::string line;
+                while (lines_producer->size() < read_chunk_size && std::getline(game_file, line))
+                    lines_producer->push_back(line);
+            }
+            #pragma omp section
+            {
+                sensor_record temp;
+                for (std::string& line: *lines_consumer) {
+                    temp = parse_sensor_record(line);
+                    if (game_step.size() > 0) {
+                        if ((temp.ts / sensor_sample_period) != (game_step[0].ts / sensor_sample_period)) {
+                            game_vector.push_back(game_step);
+                            game_step.clear();
+                        }
+                    }
+                    game_step.push_back(temp);
+                }
+            }
         }
-
-        game_step.push_back(temp);
-    }
+        swap(lines_producer, lines_consumer);
+    } while (lines_consumer->size() > 0);
 
     game_file.close();
+    delete lines_consumer;
+    delete lines_producer;
 
     DBOUT << "Sensor read completed\n";
     DBOUT << game_vector.size() << " steps recorded\n";
