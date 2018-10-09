@@ -1,8 +1,10 @@
-/** @file
+/** 
+ * @file
  * @brief Game-related data structures
  *
  * @author Marco Bacis
- * @author Daniele Cattaneo */
+ * @author Daniele Cattaneo 
+ */
 
 #ifndef MW_PARALLEL_PROGRAMMING_GAME_H
 #define MW_PARALLEL_PROGRAMMING_GAME_H
@@ -39,8 +41,7 @@ struct sensor_record {
 
     /** Computes the 3D euclidean distance to the given record
      * @param b     The record from which we are computing the distance
-     * @return      the computed distance
-     */
+     * @return      the computed distance */
     inline double distance_to(sensor_record& b)
     {
         return sqrt((x-b.x)*(x-b.x) + (y-b.y)*(y-b.y) + (z-b.z)*(z-b.z));
@@ -48,8 +49,7 @@ struct sensor_record {
 
     /** Computes the 2D euclidean distance to the given record, on the xy plane
      * @param b     The record from which we are computing the distance
-     * @return      the 2D computed distance
-     */
+     * @return      the 2D computed distance */
     inline double distance_on_ground_to(sensor_record& b)
     {
         return sqrt((x-b.x)*(x-b.x) + (y-b.y)*(y-b.y));
@@ -80,13 +80,13 @@ struct interruption {
  */
 class game {
 public:
-    std::vector<std::vector<sensor_record> > game_records; //! Sensor data for the entire game
-    std::vector<referee_event> game_events;  //!< Referee events for the entire game
-    std::vector<player> players;             //!< Players data
-    std::set<sensor_id_t> balls;             //!< For each of the two halves, set of the used balls (might be useless)
-    std::vector<interruption> interruptions;
-    std::map<sensor_id_t, unsigned int> sensorPlayerIdx;
-    unsigned int referee_idx = 0;
+    std::vector<std::vector<sensor_record> > game_records;  //! Sensor data for the entire game
+    std::vector<referee_event> game_events;                 //!< Referee events for the entire game
+    std::vector<player> players;                            //!< Players data
+    std::set<sensor_id_t> balls;                            //!< Set of all the used balls in the entire game
+    std::vector<interruption> interruptions;                //!< List of game interruptions
+    std::map<sensor_id_t, unsigned int> sensorPlayerIdx;    //!< Map from sensor IDs to indexes in players
+    unsigned int referee_idx = 0;                           //!< Index of the referree in players
 
     /** Loads the game CSVs into the game instance
      *
@@ -98,14 +98,12 @@ public:
      * - balls.csv
      * - full-game.csv
      *
-     * @param basepath The base path in which all the game related data resides
-     */
+     * @param basepath The base path in which all the game related data resides */
     void load_from_directory(const std::string& basepath);
 
     /** Tells if the game is interrupted at the given timestamp
-     * @param ts Timestamp for which to check
-     * @return true if the game is interrupted, false otherwise
-     */
+     * @param ts Timestamp to check
+     * @return true if the game is interrupted, false otherwise */
     bool is_interrupted_at_time(ps_timestamp_t ts) const
     {
         for(interruption inter : interruptions) {
@@ -117,8 +115,7 @@ public:
 
     /** Tells whether the sensor is attached to a ball or not
      * @param sid   ID of the sensor to check
-     * @return      true if the sensor is attached to a ball, false otherwise
-     */
+     * @return      true if the sensor is attached to a ball, false otherwise */
     bool is_ball_sensor_id(sensor_id_t sid) const
     {
         return balls.find(sid) != balls.end();
@@ -126,8 +123,7 @@ public:
 
     /** Tells whether the sensor is attached to a player
      * @param sid   ID of the sensor to check
-     * @return      true if the sensor is attached to a player, false otherwise
-     */
+     * @return      true if the sensor is attached to a player, false otherwise */
     bool is_player_sensor_id(sensor_id_t sid)
     {
         auto pi = sensorPlayerIdx.find(sid);
@@ -144,8 +140,7 @@ public:
      * (approximated to the most inside measures e.g. highest low y, lowest high x etc...)
      *
      * @param ball_record   The record for which to check the position
-     * @return              true if the sensor's position is inside the field, faalse otherwise
-     */
+     * @return              true if the sensor's position is inside the field, false otherwise */
     bool is_ball_inside_field(sensor_record ball_record)
     {
         int y = ball_record.y;
@@ -155,8 +150,7 @@ public:
     }
 
     /** Returns the total length in picoseconds of the game data. 
-     * @returns The duration of the recording.
-     */
+     * @returns The duration of the recording. */
     ps_timestamp_t recording_length()
     {
         return game_records.back().back().ts - game_records.front().front().ts;
