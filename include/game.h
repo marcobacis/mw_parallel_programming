@@ -153,6 +153,14 @@ public:
 
         return (x > 0 && x < 52477) && (y > -33960 && y < 33941);
     }
+
+    /** Returns the total length in picoseconds of the game data. 
+     * @returns The duration of the recording.
+     */
+    ps_timestamp_t recording_length()
+    {
+        return game_records.back().back().ts - game_records.front().front().ts;
+    }
 };
 
 

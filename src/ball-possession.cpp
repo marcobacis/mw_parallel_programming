@@ -21,59 +21,55 @@
 
 using namespace std;
 
-/** Computes and accumulates the ball possession for the given record range
- * @param g         Game from which to compute the possession
- * @param K         Maximum distance to define possession
- * @param i_start   Initial record index to consider
- * @param i_end     Last record index to consider
- * @param tot_ball  Total number of ball records found (updated by the method)
- * @param tot_rec   Total number of player sensor records found (updated by the method)
- * @param possession List of all players possessions (updated by the method)
+/** Computes and accumulates the ball possession for a record
+ * @param g          Game from which to compute the possession
+ * @param K          Maximum distance to define possession
+ * @param i          Record index to consider
+ * @param tot_ball   Total number of ball records found (updated by the method)
+ * @param tot_rec    Total number of player sensor records found (updated by the method)
+ * @param possession List of all players possessions in the time period (updated by the method)
  */
-void accum_ball_possession(game& g, int K, int i_start, int i_end, int& tot_ball, int& tot_rec, vector<double>& possession)
+inline void accum_ball_possession(game& g, int K, int i, int& ball, int& rec, vector<double>& possession)
 {
-    #pragma omp parallel for reduction(+:tot_ball, tot_rec)
-    for (int i=i_start; i<i_end; i++) {
-        vector<sensor_record>& step = g.game_records[i];
+    vector<sensor_record>& step = g.game_records[i];
 
-        //check if interrupted
-        bool interrupted = g.is_interrupted_at_time(step[0].ts);
+    //check if interrupted
+    bool interrupted = g.is_interrupted_at_time(step[0].ts);
 
-        if(!interrupted) {
-            //get balls positions
-            vector<sensor_record *> step_balls;
-            vector<sensor_record *> step_players;
-            for(sensor_record& rec: step) {
-                if (g.is_ball_sensor_id(rec.sid) && g.is_ball_inside_field(rec)) {
-                    step_balls.push_back(&rec);
-                } else if (g.is_player_sensor_id(rec.sid)) {
-                    step_players.push_back(&rec);
+    if(!interrupted) {
+        //get balls positions
+        vector<sensor_record *> step_balls;
+        vector<sensor_record *> step_players;
+        for(sensor_record& rec: step) {
+            if (g.is_ball_sensor_id(rec.sid) && g.is_ball_inside_field(rec)) {
+                step_balls.push_back(&rec);
+            } else if (g.is_player_sensor_id(rec.sid)) {
+                step_players.push_back(&rec);
+            }
+        }
+        
+        rec = step_players.size();
+        ball += step_balls.size();
+
+        double toAdd = ((double)(sensor_sample_period) / (double)one_second) / (double)(step_balls.size());
+
+        for(sensor_record *ball: step_balls) {
+            //get nearest sensor
+            double mindist = std::numeric_limits<double>::infinity();
+            int nearid = 0;
+            for (sensor_record *rec: step_players) {
+                double dist = ball->distance_on_ground_to(*rec);
+                if (dist < mindist) {
+                    nearid = rec->sid;
+                    mindist = dist;
                 }
             }
-            
-            tot_rec += step_players.size();
-            tot_ball += step_balls.size();
 
-            double toAdd = ((double)(sensor_sample_period) / (double)one_second) / (double)(step_balls.size());
-
-            for(sensor_record *ball: step_balls) {
-                //get nearest sensor
-                double mindist = std::numeric_limits<double>::infinity();
-                int nearid = 0;
-                for (sensor_record *rec: step_players) {
-                    double dist = ball->distance_on_ground_to(*rec);
-                    if (dist < mindist) {
-                        nearid = rec->sid;
-                        mindist = dist;
-                    }
-                }
-
-                if (mindist != std::numeric_limits<double>::infinity() && mindist < (K * 1000)) {
-                    double& this_possession = possession[g.sensorPlayerIdx[nearid]];
-                    #pragma omp atomic
-                    this_possession += toAdd;
-                    //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
-                }
+            if (mindist != std::numeric_limits<double>::infinity() && mindist < (K * 1000)) {
+                double& this_possession = possession[g.sensorPlayerIdx[nearid]];
+                #pragma omp atomic
+                this_possession += toAdd;
+                //DBOUT << "Player: " << players[sensorPlayerIdx[nearid]].name << " distance: " << mindist << "\n";
             }
         }
     }
@@ -107,7 +103,6 @@ void print_possession(game& g, vector<double>& possession)
  */
 void print_final_stats(const string& basepath, game& g, vector<double>& possession)
 {
-
     int teams_exp[2] = {0, 0};
     int teams_act[2] = {0, 0};
 
@@ -143,7 +138,6 @@ void print_final_stats(const string& basepath, game& g, vector<double>& possessi
 
             cout << "player " << g.players[pl].name << ", possession = " << possession[pl] << 
                 " (referee = " << player_possession << ")" << endl;
-
         }
     }
 
@@ -192,38 +186,38 @@ int main(int argc, char **argv)
     game g;
     g.load_from_directory(basepath);
     
-    vector<double> possession(g.players.size(), 0);
+    ps_timestamp_t zero_offset = g.game_records.front().front().ts;
+    long int n_periods = (g.recording_length() / (T * one_second)) + 1;
+    vector<vector<double> > possession(n_periods, vector<double>(g.players.size(), 0));
 
     int tot_ball = 0;
     int tot_rec = 0;
 
-    int interval_start = 0;
-    int interval_end = 0;
-    ps_timestamp_t interval_start_time = g.game_records[0][0].ts;
-    ps_timestamp_t interval_end_time = interval_start_time;
-
     int nrecords = g.game_records.size();
+    #pragma omp parallel for reduction(+:tot_ball, tot_rec)
     for (int i=1; i<nrecords; i++) {
-        /* The data is in g.game_records but we simulate getting it in real time
-         * by scanning through it linearly */
         vector<sensor_record>& step = g.game_records[i];
-
-        interval_end = i;
-        interval_end_time = step[0].ts;
-        if (interval_end_time - interval_start_time > T * one_second) {
-            accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
-            cout << "possession at time " << interval_end_time / one_second << " s" << endl;
-            print_possession(g, possession);
-            cout << endl;
-            interval_start = interval_end;
-            interval_start_time = interval_end_time;
-        }
+        int bucket_i = (step[0].ts - zero_offset) / (T * one_second);
+        int ball=0, rec=0;
+        accum_ball_possession(g, K, i, ball, rec, possession[bucket_i]);
+        tot_ball += ball;
+        tot_rec += rec;
     }
     
-    accum_ball_possession(g, K, interval_start, interval_end, tot_ball, tot_rec, possession);
+    for (int i=1; i<n_periods; i++) {
+        #pragma omp parallel for simd
+        for (unsigned int j=0; j<g.players.size(); j++) {
+            possession[i][j] += possession[i-1][j];
+        }
+    }
 
+    for (int i=0; i<n_periods-1; i++) {
+        cout << "possession at time " << ((i + 1) * T) + (zero_offset / one_second) << " s" << endl;
+        print_possession(g, possession[i]);
+        cout << endl;
+    }
     cout << "final possession stats: " << endl;
-    print_final_stats(basepath, g, possession);
+    print_final_stats(basepath, g, possession.back());
 
     DBOUT << "Total player records " << tot_rec << ", total ball records " << tot_ball << "\n\n";
 }
