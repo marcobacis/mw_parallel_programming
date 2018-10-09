@@ -14,6 +14,7 @@
 #include <map>
 #include <limits>
 #include <climits>
+#include <chrono>
 #include "utils.h"
 #include "game.h"
 #include "referee.h"
@@ -183,8 +184,10 @@ int main(int argc, char **argv)
         return 2;
     }
 
+    auto load_time_start = chrono::steady_clock::now();
     game g;
     g.load_from_directory(basepath);
+    auto load_time_end = chrono::steady_clock::now();
     
     ps_timestamp_t zero_offset = g.game_records.front().front().ts;
     long int n_periods = (g.recording_length() / (T * one_second)) + 1;
@@ -193,6 +196,7 @@ int main(int argc, char **argv)
     int tot_ball = 0;
     int tot_rec = 0;
 
+    auto compute_time_start = chrono::steady_clock::now();
     int nrecords = g.game_records.size();
     #pragma omp parallel for reduction(+:tot_ball, tot_rec)
     for (int i=1; i<nrecords; i++) {
@@ -210,6 +214,7 @@ int main(int argc, char **argv)
             possession[i][j] += possession[i-1][j];
         }
     }
+    auto compute_time_end = chrono::steady_clock::now();
 
     for (int i=0; i<n_periods-1; i++) {
         cout << "possession at time " << ((i + 1) * T) + (zero_offset / one_second) << " s" << endl;
@@ -220,4 +225,9 @@ int main(int argc, char **argv)
     print_final_stats(basepath, g, possession.back());
 
     DBOUT << "Total player records " << tot_rec << ", total ball records " << tot_ball << "\n\n";
+
+    chrono::duration<double> load_time = load_time_end - load_time_start;
+    chrono::duration<double> compute_time = compute_time_end - compute_time_start;
+    DBOUT << "file read time = " << load_time.count() << " s" << endl;
+    DBOUT << "computation time = " << compute_time.count() << " s" << endl;
 }
