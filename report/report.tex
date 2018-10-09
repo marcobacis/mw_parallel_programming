@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage[]{algorithm2e}
+\usepackage{listings}
 
 \begin{document}
 %Header-Make sure you update this information!!!!
@@ -39,6 +40,8 @@ A player is considered in possession of the ball when
 
 \section*{Implementation}
 
+\subsection*{Serial Implementation}
+
 In order to compute the ball possessions, the algorithm must divide the sensor data into a set of {\bf time-steps} based on the sensor's data rate.
 After that, for each timestep the nearest player can be found and its possession time updated.
 In this case, given that the slowest sensor has a 200Hz rate, the timestep-based grouping of the records is done by dividing each record's timestamp (in picoseconds) by $1 / 200 = 0.005s = 5\,000\,000\,000ps$.
@@ -47,6 +50,7 @@ This is done while loading the game records file.
 
 The ball sensor outputs data at 2kHz, so for each timestep group there are about 10 ball records (usually more, as many ball sensors are on at the same time, even if just one ball is used).
 To compute the ball possession, for each group the nearest player is found for each of the current ball's positions, and the timestep (5ms) is distributed among those distinct positions.
+The metric used to get the nearest player is only the ground-based distance, as it was seen (by watching the mmatch videos and pairing them to the ball's positions) that the $z$ measures brought to errors in the possession computation, due to their inaccuracy w.r.t the $x$ and $y$ ones.
 The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
 
 \begin{algorithm}[tb]
@@ -56,33 +60,35 @@ The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
     \Input{Full game sensor records, game interruptions, K, T}
     \Output{Cumulated possession results every T seconds}
     \BlankLine
-    \ForEach{game step $s$ in the game records vector}{
-        \If{game is not interrupted at time $s.timestep$}{
-            $B \longleftarrow \emptyset$\;
-            $P \longleftarrow \emptyset$\;
-            \tcp{First loop, to gather just the balls records}
-            \ForEach{record $r \in s$} {
-                \uIf{$r$ is a ball {\bf and} $r$ is inside the field}{
-                    $B \longleftarrow B \cup r$\;
-                }
-                \uElseIf{$r$ is a player}{
-                    $P \longleftarrow P \cup r$\;
-                }
-            }
-            \tcp{Second loop to compute the actual possession}
-            $increment \longleftarrow 5ms / B.size$\;
-            \ForEach{ball record $b \in B$}{
-                $minDist \longleftarrow INT\_MAX$\;
-                $minPlayer \longleftarrow \emptyset$\;
-                \ForEach{player record $p \in P$}{
-                    $dist \longleftarrow p.x^2 + p.y^2$ \tcc*[r]{ground distance}
-                    \If{$dist < minDist$}{
-                        $minDist \longleftarrow dist$\;
-                        $minPlayer \longleftarrow p$\;
+    \ForEach{$bucket$ of $T$ seconds records taken from the full game}{
+        \ForEach{game step $s \in bucket$}{
+            \If{game is not interrupted at time $s.timestep$}{
+                $B \longleftarrow \emptyset$\;
+                $P \longleftarrow \emptyset$\;
+                \tcp{First loop, to gather just the balls records}
+                \ForEach{record $r \in s$} {
+                    \uIf{$r$ is a ball {\bf and} $r$ is inside the field}{
+                        $B \longleftarrow B \cup r$\;
+                    }
+                    \uElseIf{$r$ is a player}{
+                        $P \longleftarrow P \cup r$\;
                     }
                 }
-                \If{$minDist < K$}{
-                    $possession[minPlayer] \longleftarrow increment$
+                \tcp{Second loop to compute the actual possession}
+                $increment \longleftarrow 5ms / B.size$\;
+                \ForEach{ball record $b \in B$}{
+                    $minDist \longleftarrow INT\_MAX$\;
+                    $minPlayer \longleftarrow \emptyset$\;
+                    \ForEach{player record $p \in P$}{
+                        $dist \longleftarrow p.x^2 + p.y^2$ \tcc*[r]{ground distance}
+                        \If{$dist < minDist$}{
+                            $minDist \longleftarrow dist$\;
+                            $minPlayer \longleftarrow p$\;
+                        }
+                    }
+                    \If{$minDist < K$}{
+                        $possession[minPlayer] \longleftarrow increment$
+                    }
                 }
             }
         }
@@ -90,6 +96,29 @@ The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
     \caption{Main algorithm for ball possession computation}
     \label{algorithm:main_loops}
 \end{algorithm}
+
+\subsection*{Parallelization}
+
+To parallelize the algorithm, OpenMP alone was used, as using a distributed system would have meant to move around the sensor records.
+A first look at the running time of the serial algorithm shows that the majority of the time is passed reading the records csv file and parsing it.
+This means that, even in the algorithm can be parallelized, the running time will not be affected that much (by Amdahl's law).
+Also, it doesn't help with the distributed approach, as the processing time is too low to gain much advantage by transferring the workload to other systems.
+
+At first, the parallelization was applied by putting the \emph{parallel reduction} pragma in the second-level loop in Algorithm~\ref{algorithm:main_loops}.
+Also an \emph{atomic} pragma was added to player possession increment, in order to avoid race conditions on the possession statistic.
+
+In order to improve the parallelization, different pragmas were applied and the loop were split.
+
+The first loop is the outer (for each bucket of records in T seconds ranges), parallelized in a coarse-grained manner with the same pragmas as before (\emph{parallel}, \emph{reduction} and \emph{atomic}).
+
+The second loop, for the possession time accumulation through buckets was extracted from the first one (before it was done inside it and along the print statements) and parallelized, by using a matrix of possessions (one element for each bucket, for each player), instead of a single, atomically-incremented vector (one element per player).
+
+The matrix is filled by the first loop, then the accumulation is done with a loop over the time/bucket index and the single player.
+Finally, the partial accumulations are printed to screen (and can be redirected to a file).
+To improve this second loop performance, the \emph{simd} pragma was used.
+The added pragma allows to execute the accumulation using SIMD execution of compatible CPUs, parallelizing it in a fine-grained way (over the single operations).
+
+\section*{Results}
 
 
 \end{document}
