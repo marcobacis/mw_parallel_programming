@@ -104,12 +104,13 @@ A first look at the running time of the serial algorithm shows that the majority
 This means that, even in the algorithm can be parallelized, the running time will not be affected that much (by Amdahl's law).
 Also, it doesn't help with the distributed approach, as the processing time is too low to gain much advantage by transferring the workload to other systems.
 
-At first, the parallelization was applied by putting the \emph{parallel reduction} pragma in the second-level loop in Algorithm~\ref{algorithm:main_loops}.
-Also an \emph{atomic} pragma was added to player possession increment, in order to avoid race conditions on the possession statistic.
+Given that the file reading is sequential, the parsing has been implemented in parallel to it, by using \emph{pipelining} between two parallel sections of code (reading -> parsing).
 
-In order to improve the parallelization, different pragmas were applied and the loop were split.
+As for the computation loop, it was split and parallelized in two parts.
 
-The first loop is the outer (for each bucket of records in T seconds ranges), parallelized in a coarse-grained manner with the same pragmas as before (\emph{parallel}, \emph{reduction} and \emph{atomic}).
+The first loop is the outer (for each bucket of records in T seconds ranges), which was parallelized in a coarse-grained manner.
+The \emph{parallel} pragma indicates that the loop is splitted in multiple threads, while the \emph{reduction} pragma means that for the possession aggregate variables, the accumulation is done in parallel.
+Also, for the single player possession time increment, the \emph{atomic} pragma was added to prevent race conditions.
 
 The second loop, for the possession time accumulation through buckets was extracted from the first one (before it was done inside it and along the print statements) and parallelized, by using a matrix of possessions (one element for each bucket, for each player), instead of a single, atomically-incremented vector (one element per player).
 
@@ -119,6 +120,19 @@ To improve this second loop performance, the \emph{simd} pragma was used.
 The added pragma allows to execute the accumulation using SIMD execution of compatible CPUs, parallelizing it in a fine-grained way (over the single operations).
 
 \section*{Results}
+
+The application was tested on a Intel core i5-8259U CPU (2.30GHz, 4 cores, 8 threads) machine with 8GB of DDR4 DRAM.
+In total, 4 tests were performed (with 10 runs each): K=1m,T=60s and K=5m,T=1s; serial and parallel.
+
+The results can be seen in Figure~\ref{fig:results}. 
+
+%\begin{figure}[hb]
+%\centering
+%    \includegraphics[width=0.7\linewidth]{images/results.png}
+%    \caption{Performance tests results}
+%   \label{fig:results}
+%\end{figure}
+
 
 
 \end{document}
