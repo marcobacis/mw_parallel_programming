@@ -33,7 +33,6 @@ A player is considered in possession of the ball when
     \item Arm/shoe attached sensors sends data at 200Hz, while the ball has a 2kHz rate
     \item As found from the DEBS2013 challenge paper, the field is half the dimension of a standard soccer field (66 x 52 meters)
     \item Each player (and even the referee) has 2 sensors, one for each arm. The goalkeeper has 4 sensors (1 more for each arm)
-    \item The data from the sensors starts before the game begins and stops after the game ends, including the time between the two halves
     \item There is no sensor data during the last 2.5 minutes before the first half ends
     \item 4 balls are used during the game, but only the one inside the field is used for the possession computation
 \end{itemize}
@@ -41,7 +40,6 @@ A player is considered in possession of the ball when
 \section*{Implementation}
 
 \subsection*{Serial Implementation}
-
 In order to compute the ball possessions, the algorithm must divide the sensor data into a set of {\bf time-steps} based on the sensor's data rate.
 After that, for each timestep the nearest player can be found and its possession time updated.
 In this case, given that the slowest sensor has a 200Hz rate, the timestep-based grouping of the records is done by dividing each record's timestamp (in picoseconds) by $1 / 200 = 0.005s = 5\,000\,000\,000ps$.
@@ -53,7 +51,7 @@ To compute the ball possession, for each group the nearest player is found for e
 The metric used to get the nearest player is only the ground-based distance, as it was seen (by watching the mmatch videos and pairing them to the ball's positions) that the $z$ measures brought to errors in the possession computation, due to their inaccuracy w.r.t the $x$ and $y$ ones.
 The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
 
-\begin{algorithm}[tb]
+\begin{algorithm}[h]
     \SetKwInOut{Input}{input}
     \SetKwInOut{Output}{output}
 
@@ -101,8 +99,7 @@ The algorithm's pseudocode is shown in Algorithm~\ref{algorithm:main_loops}.
 
 To parallelize the algorithm, OpenMP alone was used, as using a distributed system would have meant to move around the sensor records.
 A first look at the running time of the serial algorithm shows that the majority of the time is passed reading the records csv file and parsing it.
-This means that, even in the algorithm can be parallelized, the running time will not be affected that much (by Amdahl's law).
-Also, it doesn't help with the distributed approach, as the processing time is too low to gain much advantage by transferring the workload to other systems.
+This means that, even in the algorithm can be parallelized, the running time will not be affected much, and the processing time is too low to gain much advantage by transferring the workload to other systems.
 
 Given that the file reading is sequential, the parsing has been implemented in parallel to it, by using \emph{pipelining} between two parallel sections of code (reading -> parsing).
 
@@ -121,17 +118,20 @@ The added pragma allows to execute the accumulation using SIMD execution of comp
 
 \section*{Results}
 
-The application was tested on a Intel core i5-8259U CPU (2.30GHz, 4 cores, 8 threads) machine with 8GB of DDR4 DRAM.
+The application has been tested on a Intel core i5-8259U CPU (2.30GHz, 4 cores, 8 threads) machine with 8GB of DDR4 DRAM.
 In total, 4 tests were performed (with 10 runs each): K=1m,T=60s and K=5m,T=1s; serial and parallel.
 
-The results can be seen in Figure~\ref{fig:results}. 
+The results can be seen in Figure~\ref{fig:results}. It can be seen that the data reading part of the application hasn't gained much from the pipelining adopted, while the computation time was reduced considerably (from 3.24 to 1.12 seconds for the K=1,T=60 case, and similar for the other).
+The overall speedup is 1.24X, with a 1.20X for the file reading/parsing and 3.26X for the computation.
+The computation speedup is optimal and close to the number of physical cores (as the instruction mix of the running threads is similar, hyperthreading is not useful).
 
-%\begin{figure}[hb]
-%\centering
-%    \includegraphics[width=0.7\linewidth]{images/results.png}
-%    \caption{Performance tests results}
-%   \label{fig:results}
-%\end{figure}
+
+\begin{figure}[h]
+\centering
+    \includegraphics[width=0.66\linewidth]{images/results.png}
+    \caption{Performance tests results}
+   \label{fig:results}
+\end{figure}
 
 
 
